@@ -125,9 +125,6 @@ button.sm{min-height:28px;font-size:12px;padding:0 8px}
 #mdb details{margin-top:8px}#mdb summary{cursor:pointer;color:var(--mut)}
 @media (max-width:820px),(max-height:520px){#ps,#mdb textarea{font-size:16px}}
 @media (max-width:820px),(max-height:520px){#phead{display:flex;flex-wrap:wrap;gap:6px;align-items:center}#phead h3,#ptools .pt{display:none}#ps{flex:1 1 120px;width:auto;min-width:0;margin:0}#padd{flex-basis:100%;margin:0}.mob{font-size:15px;padding:0 7px}}
-.fdg{display:flex;flex-direction:column;gap:8px;width:min(86vw,420px);max-height:72vh;overflow:auto}.fdg label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
-.fdg input,.fdg select,.fdg textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;min-height:0}
-#fm{width:100%;height:110px;resize:vertical;box-sizing:border-box}.fdg .fck{flex-direction:row;align-items:center;gap:6px;font-size:13px;color:var(--ink)}.fdg .fck input{width:auto}
 </style></head><body>
 <div id="app">
 <header id="tb">
@@ -151,7 +148,7 @@ button.sm{min-height:28px;font-size:12px;padding:0 8px}
   <button class="wk" data-a="wE" id="wE" style="background:#16a34a" title="Earth wire">E</button><button class="wk" data-a="wP" id="wP" style="background:#ea580c" title="DC + wire">+</button><button class="wk" data-a="wM" id="wM" style="background:#111827" title="DC − wire">−</button>
   <select id="gm" title="Display mode for all components"><option value="real">Realistic</option><option value="sch">Schematic</option><option value="hyb">Hybrid</option></select>
   <select id="ex" title="Learning examples"><option value="">Examples…</option><option value="stair">Staircase 2-way light</option><option value="hall">Hallway intermediate</option><option value="kitchen">Kitchen RCD + socket</option><option value="garage">Relay-controlled motor</option></select>
-  <button data-a="fb">💬 Feedback</button><button data-a="theme">◐ Theme</button><button data-a="demo">Demo</button><button id="bp" data-a="probe" title="Multimeter probe">🔍 Probe</button><button data-a="check">✓ Check</button><button data-a="save">Export</button><button data-a="load">Import</button><button data-a="clear">Clear</button>
+  <button data-a="theme">◐ Theme</button><button data-a="demo">Demo</button><button id="bp" data-a="probe" title="Multimeter probe">🔍 Probe</button><button data-a="check">✓ Check</button><button data-a="save">Export</button><button data-a="load">Import</button><button data-a="clear">Clear</button>
  </div>
 </header>
 <div id="ctx"></div>
@@ -168,18 +165,6 @@ button.sm{min-height:28px;font-size:12px;padding:0 8px}
   <div class="mt"><small>Multimeter (🔍 Probe, tap two terminals)</small><div id="mm">–</div></div><h3>Event log</h3><div id="log"></div>
  </aside>
 </main>
-<dialog id="fd"><h3 style="margin:0 0 8px">💬 Send feedback <small id="fv" style="color:var(--mut);font-weight:400"></small></h3>
-<div class="fdg">
- <label>Your name (optional)<input id="fn" autocomplete="name"></label>
- <label>Email or WhatsApp (optional, if you want a reply)<input id="fc"></label>
- <label>Type<select id="ft"><option>Bug – something broke</option><option>Idea – feature request</option><option>Something was confusing</option><option>Praise – I liked it</option></select></label>
- <label>Which part?<select id="fa"><option>Components / parts</option><option>Wiring</option><option>Simulation (Play / results)</option><option>Meters / instruments</option><option>Solar / battery / inverter</option><option>Phone layout</option><option>Install / offline</option><option>Other</option></select></label>
- <label>How do you rate the app?<select id="fr"><option value="5">★★★★★ Excellent</option><option value="4">★★★★ Good</option><option value="3">★★★ OK</option><option value="2">★★ Poor</option><option value="1">★ Very poor</option></select></label>
- <label>Your feedback<textarea id="fm" placeholder="What happened? What did you expect?"></textarea></label>
- <label class="fck"><input type="checkbox" id="fk" checked> Attach my current circuit (helps fix bugs)</label>
- <div id="fs" style="font-size:12px;color:var(--mut)">Your device type and screen size are added automatically.</div>
-</div>
-<div style="margin-top:8px;display:flex;gap:6px"><button id="fsend" class="on">Send</button><button id="fcl">Close</button></div></dialog>
 <dialog id="dl"><h3 id="dh" style="margin:0 0 8px"></h3><textarea id="dt"></textarea><div style="margin-top:8px;display:flex;gap:6px"><button id="dok">OK</button><button id="dcl">Close</button></div></dialog>
 <dialog id="md"><div class="mdw"><div class="mdh"><h3 id="mdt"></h3><button data-md="x" aria-label="Close">✕</button></div><div id="mdb"></div><div id="mdm" role="status"></div></div></dialog>
 
@@ -424,15 +409,6 @@ Object.entries(GANG).forEach(([k,n])=>{const sp=n==2?40:n==3?30:24,ys=[...Array(
   sch:c=>{const g=gg(c);return P('M-40 0H-14')+ys.map((y,i)=>P(`M14 ${y}H40M-14 0L${g[i]?'14 '+y:'12 '+(y*.6-6)}`)+dot(14,y)).join('')+dot(-14,0)},
   real:c=>{const g=gg(c);return `<rect x="${-pw/2}" y="${-H/2+4}" width="${pw}" height="${H-8}" rx="6" fill="#f8f7f2" stroke="#9ca3af" stroke-width="2"/>`+ys.map((_,i)=>{const x=-pw/2+4+i*rw,y=-H/2+10,h=H-20;return `<rect x="${x}" y="${y}" width="${rw-2}" height="${h}" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="${x}" y="${g[i]?y:y+h/2}" width="${rw-2}" height="${h/2}" rx="3" fill="#6b7280" opacity=".55"/>`}).join('')}};
  ACTS[k]=c=>gg(c).map((v,i)=>['Gang '+(i+1)+' '+(v?'OFF':'ON'),c=>{gg(c)[i]^=1}]);NOCLICK[k]=1});
-const APP_VERSION='v9',FB_URL='';
-function openFB(){$('#fv').textContent=APP_VERSION;$('#fd').showModal()}
-async function sendFB(){const m=$('#fm').value.trim(),S=t=>{$('#fs').textContent=t};if(!m){S('Please write your feedback first.');return}
- const o={name:$('#fn').value,contact:$('#fc').value,type:$('#ft').value,part:$('#fa').value,rating:$('#fr').value,message:m,version:APP_VERSION,screen:innerWidth+'x'+innerHeight,device:navigator.userAgent,time:new Date().toISOString()};
- if($('#fk').checked){try{o.circuit=snapS()}catch(e){}}
- if(FB_URL){try{const r=await fetch(FB_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(o)});if(!r.ok)throw 0;S('✔ Thank you! Your feedback was sent.');$('#fm').value='';setTimeout(()=>$('#fd').close(),1600)}catch(e){S('Could not send (check your internet). Your text is kept – try again.')}return}
- const t='ElecSim feedback '+APP_VERSION+'\nName: '+o.name+'\nContact: '+o.contact+'\nType: '+o.type+'\nPart: '+o.part+'\nRating: '+o.rating+'/5\n\n'+m+'\n\nDevice: '+o.screen+' '+o.device+(o.circuit?'\n\nCircuit: '+o.circuit:'');
- try{if(navigator.share){await navigator.share({title:'ElecSim feedback',text:t});return}}catch(e){return}
- try{await navigator.clipboard.writeText(t);S('Copied! Paste it into a message to the developer.')}catch(e){S('Could not send. Ask the developer to set up the feedback link.')}}
 function fit(){const r=$('#svg').getBoundingClientRect();if(!comps.length||!r.width){view={x:30,y:30,z:1};applyView();return}let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;comps.forEach(c=>{const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC/2+15,q=(o?T.w:T.h)*SC/2+35;x0=Math.min(x0,c.x-w);x1=Math.max(x1,c.x+w);y0=Math.min(y0,c.y-q);y1=Math.max(y1,c.y+q)});const z=Math.min(1,Math.max(.3,Math.min(r.width/(x1-x0),r.height/(y1-y0))*.95));view.z=z;view.x=r.width/2-z*(x0+x1)/2;view.y=r.height/2-z*(y0+y1)/2;applyView()}
 function sim(){
  comps.forEach(c=>{c.lit=0;c.hot=0;c.flow=0;c.low=0;if(c.type=='relay'&&!running)c.s.on=0});wires.forEach(w=>{w.live=0;w.flow=0});R={V:0,I:0,P:0,dc:0,pv:0};
@@ -466,7 +442,7 @@ function drawC(c){const T=TY[c.type],m=c.mode||gmode,odd=c.rot%2,eh=odd?T.w:T.h;
  h+=body(c,m)+`<rect class="body" x="${-T.w/2}" y="${-T.h/2}" width="${T.w}" height="${T.h}"/>`;
  if(sel==c.id)h+=`<rect x="${-T.w/2-2}" y="${-T.h/2-2}" width="${T.w+4}" height="${T.h+4}" rx="6" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4" pointer-events="none"/>`;
  h+=Object.entries(T.t).map(([n,[x,y,k]])=>`<circle cx="${x}" cy="${y}" r="4" fill="${KC[k]}" stroke="#111" stroke-width="1" pointer-events="none"/><circle class="term" data-t="${c.id}:${n}" cx="${x}" cy="${y}" r="${TR}"/>`).join('')+'</g>';
- h+=`<text class="lb" x="${c.x}" y="${c.y+eh*SC/2+14}">${T.n}${c.s.rate?' '+c.s.rate+'A':''}${c.s.dead?' ✖':''}${c.s.leak?' ⚡':''}${c.low?' ↓V':''}</text>`;
+ h+=`<text class="lb" x="${c.x}" y="${c.y+eh*SC/2+14}">${esc(c.name||T.n)}${c.s.rate?' '+c.s.rate+'A':''}${c.s.dead?' ✖':''}${c.s.leak?' ⚡':''}${c.low?' ↓V':''}</text>`;
  if(m=='hyb'){const bh=.6*(T.h+10);h+=`<g transform="translate(${c.x} ${c.y-eh*SC/2-bh/2-3}) scale(.6)" pointer-events="none" style="color:#111"><rect x="-50" y="${-(T.h+10)/2}" width="100" height="${T.h+10}" rx="8" fill="#fff" stroke="#9ca3af" stroke-width="2"/>${T.sch(c)}</g>`}
  return h+'</g>'}
 function wd(w){const[ax,ay]=tpos(w.a),[bx,by]=tpos(w.b),mx=(ax+bx)/2+(LN[w.id]||0);return`M${ax} ${ay}H${mx}V${by}H${bx}`}
@@ -479,12 +455,13 @@ function render(){LN=lanes();
  h+=comps.map(drawC).join('')+marksSVG()+'<path id="pv" fill="none" stroke="#6b7280" stroke-width="3" stroke-dasharray="4 4" pointer-events="none"/>';
  $('#vp').innerHTML=h;applyView()}
 function applyView(){$('#vp').setAttribute('transform',`translate(${view.x} ${view.y}) scale(${view.z})`);$('#zl').textContent=Math.round(view.z*100)+'%'}
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 function ui(){
  $('#bu').disabled=!undo.length;$('#br').disabled=!redo.length;$('#bro').disabled=!sel;$('#bd').disabled=!sel&&!selW;
  $('#play').disabled=running;$('#stop').disabled=!running;$('#fpl').disabled=running;$('#fst').disabled=!running;$('#bm').classList.toggle('on',moveOn);$('#bg').classList.toggle('on',grid);$('#bp').classList.toggle('on',probe);
  ['L','N','E','P','M'].forEach(k=>{const o=wk==k?'3px solid var(--ink)':'none';$('#w'+k).style.outline=o;$('#fw'+k).style.outline=o});
  const x=$('#ctx'),c=sel&&byId(sel);acts=[];
- if(c){acts=(ACTS[c.type]?ACTS[c.type](c):[]);x.innerHTML=`<b>${TY[c.type].n}</b>`+acts.map((a,i)=>`<button data-i="${i}">${a[0]}</button>`).join('')+`<select id="cm" title="Display mode for this component only"><option value="">Display: Auto (global)</option><option value="real">Realistic</option><option value="sch">Schematic</option><option value="hyb">Hybrid</option></select>`+('rate' in c.s?`<select id="cr" title="Rating (A)">${[3,6,10,13,16,20,32,40,63,100].map(v=>`<option${v==c.s.rate?' selected':''}>${v}</option>`).join('')}</select> A`:'');$('#cm').value=c.mode||''}
+ if(c){acts=(ACTS[c.type]?ACTS[c.type](c):[]);x.innerHTML=`<b>${TY[c.type].n}</b><input id="cn" maxlength="28" placeholder="Name (e.g. Kitchen lamp)" title="Rename this component" value="${esc(c.name||'')}" style="min-height:36px;padding:0 8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;width:min(46vw,190px)">`+acts.map((a,i)=>`<button data-i="${i}">${a[0]}</button>`).join('')+`<select id="cm" title="Display mode for this component only"><option value="">Display: Auto (global)</option><option value="real">Realistic</option><option value="sch">Schematic</option><option value="hyb">Hybrid</option></select>`+('rate' in c.s?`<select id="cr" title="Rating (A)">${[3,6,10,13,16,20,32,40,63,100].map(v=>`<option${v==c.s.rate?' selected':''}>${v}</option>`).join('')}</select> A`:'');$('#cm').value=c.mode||''}
  else if(selW){const w=wires.find(w=>w.id==selW);x.innerHTML=`<b>${{L:'Live',N:'Neutral',E:'Earth'}[w.k]} wire</b><button data-i="w">Delete wire</button>`}
  else x.innerHTML='<span class="hint" style="color:var(--mut)">Tap a component to add it, or drag it onto the canvas · drag from a terminal dot to wire · tap switches to toggle · press ▶ Play</span>'}
 function after(){sim();render();ui();mkUI();pal(false);try{localStorage.setItem('hes',snapS())}catch(e){}}
@@ -505,7 +482,7 @@ function demo(){push();comps=[];wires=[];sel=selW=null;nid=1;
  after();fit();log('Demo loaded: source → MCB → switch → lamp + LED')}
 const ACT={play(){running=true;log('Simulation started');after()},stop(){running=false;log('Simulation stopped');after()},undo:()=>doUndo(),redo:()=>doRedo(),
  move(){moveOn=!moveOn;ui()},rot(){const c=byId(sel);if(c){push();c.rot=(c.rot+1)%4;after()}},del,zin(){const r=$('#svg').getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1.2)},zout(){const r=$('#svg').getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1/1.2)},
- grid(){grid=!grid;render();ui()},demo,save(){exportUI()},load(){importUI()},check,probe(){probe=!probe;pr=[];ui()},fb(){openFB()},more(){$('#tb').classList.toggle('open')},full(){document.body.classList.toggle('full');document.querySelectorAll('.panel.open').forEach(x=>x.classList.remove('open'));setTimeout(fit,60)},fit(){fit()},dup(){const c=byId(sel);if(c){push();const n=clone(c);n.id='c'+nid++;n.x+=45;n.y+=45;comps.push(n);sel=n.id;after()}},clear(){clearUI()},wL(){wk='L';ui()},wN(){wk='N';ui()},wE(){wk='E';ui()},wP(){wk='P';ui()},wM(){wk='M';ui()},theme(){const d=document.documentElement,dk=matchMedia('(prefers-color-scheme:dark)').matches,cur=d.dataset.theme||(dk?'dark':'light');d.dataset.theme=cur=='dark'?'light':'dark';try{localStorage.setItem('hth',d.dataset.theme)}catch(e){}}};
+ grid(){grid=!grid;render();ui()},demo,save(){exportUI()},load(){importUI()},check,probe(){probe=!probe;pr=[];ui()},more(){$('#tb').classList.toggle('open')},full(){document.body.classList.toggle('full');document.querySelectorAll('.panel.open').forEach(x=>x.classList.remove('open'));setTimeout(fit,60)},fit(){fit()},dup(){const c=byId(sel);if(c){push();const n=clone(c);n.id='c'+nid++;n.x+=45;n.y+=45;comps.push(n);sel=n.id;after()}},clear(){clearUI()},wL(){wk='L';ui()},wN(){wk='N';ui()},wE(){wk='E';ui()},wP(){wk='P';ui()},wM(){wk='M';ui()},theme(){const d=document.documentElement,dk=matchMedia('(prefers-color-scheme:dark)').matches,cur=d.dataset.theme||(dk?'dark':'light');d.dataset.theme=cur=='dark'?'light':'dark';try{localStorage.setItem('hth',d.dataset.theme)}catch(e){}}};
 function doUndo(){if(!undo.length)return;redo.push(snapS());restore(undo.pop())}
 function doRedo(){if(!redo.length)return;undo.push(snapS());restore(redo.pop())}
 /* ---------- events ---------- */
@@ -513,7 +490,7 @@ $('#tb').onclick=e=>{const b=e.target.closest('[data-a]');if(b)ACT[b.dataset.a](
 $('#gm').onchange=e=>{gmode=e.target.value;pal();render()};
 $('#sup').onchange=e=>{SUP=e.target.value=='230'?{v:230,f:50}:{v:120,f:60};after()};
 $('#ctx').onclick=e=>{const b=e.target.closest('[data-i]');if(!b)return;if(b.dataset.i=='w')return del();const c=byId(sel);push();acts[+b.dataset.i][1](c);after()};
-$('#ctx').onchange=e=>{if(e.target.id=='cr'){push();byId(sel).s.rate=+e.target.value;after()}if(e.target.id=='cm'){push();byId(sel).mode=e.target.value||null;after()}};
+$('#ctx').onchange=e=>{if(e.target.id=='cn'){push();const c=byId(sel);if(c){c.name=e.target.value.trim()||null;after()}return}if(e.target.id=='cr'){push();byId(sel).s.rate=+e.target.value;after()}if(e.target.id=='cm'){push();byId(sel).mode=e.target.value||null;after()}};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;const p=$('#'+b.dataset.p),o=p.classList.contains('open');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('open'));if(!o)p.classList.add('open')});
 const svg=$('#svg');svg.ondragover=e=>e.preventDefault();
 svg.ondrop=e=>{e.preventDefault();const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)importFile(f)};
@@ -690,7 +667,7 @@ function loop(t){const dt=(t-last)/1000;last=t;batt(dt,t);comps.forEach(c=>{if(c
  [['#facc15',aV],['#22d3ee',aI]].forEach(([col,a])=>{cx.strokeStyle=col;cx.lineWidth=2;cx.beginPath();for(let x=0;x<=W;x++){const y=H/2-a*Math.sin(2*Math.PI*(x/W*3+ph));x?cx.lineTo(x,y):cx.moveTo(x,y)}cx.stroke()});
  requestAnimationFrame(loop)}
 addEventListener('orientationchange',()=>setTimeout(fit,300));
-$('#fl').onclick=e=>{const b=e.target.closest('[data-a]');if(b)ACT[b.dataset.a]()};try{const t=localStorage.getItem('hth');if(t)document.documentElement.dataset.theme=t}catch(e){}$('#sun').oninput=e=>{SUN=+e.target.value;after()};$('#spd').onchange=e=>{SPEED=+e.target.value};$('#fsend').onclick=sendFB;$('#fcl').onclick=()=>$('#fd').close();$('#dcl').onclick=()=>$('#dl').close();$('#dok').onclick=()=>{try{dcb($('#dt').value)}catch(e){alert('Invalid circuit text')}$('#dl').close()};$('#ex').onchange=e=>{loadEx(e.target.value);e.target.value=''};
+$('#fl').onclick=e=>{const b=e.target.closest('[data-a]');if(b)ACT[b.dataset.a]()};try{const t=localStorage.getItem('hth');if(t)document.documentElement.dataset.theme=t}catch(e){}$('#sun').oninput=e=>{SUN=+e.target.value;after()};$('#spd').onchange=e=>{SPEED=+e.target.value};$('#dcl').onclick=()=>$('#dl').close();$('#dok').onclick=()=>{try{dcb($('#dt').value)}catch(e){alert('Invalid circuit text')}$('#dl').close()};$('#ex').onchange=e=>{loadEx(e.target.value);e.target.value=''};
 pal();let sv=null;try{sv=localStorage.getItem('hes')}catch(e){}if(sv){try{restore(sv)}catch(e){demo()}}else demo();undo=[];ui();requestAnimationFrame(()=>{fit();requestAnimationFrame(loop)});
 </script><script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 </body></html>

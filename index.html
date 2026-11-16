@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -125,6 +127,14 @@ button.sm{min-height:28px;font-size:12px;padding:0 8px}
 #mdb details{margin-top:8px}#mdb summary{cursor:pointer;color:var(--mut)}
 @media (max-width:820px),(max-height:520px){#ps,#mdb textarea{font-size:16px}}
 @media (max-width:820px),(max-height:520px){#phead{display:flex;flex-wrap:wrap;gap:6px;align-items:center}#phead h3,#ptools .pt{display:none}#ps{flex:1 1 120px;width:auto;min-width:0;margin:0}#padd{flex-basis:100%;margin:0}.mob{font-size:15px;padding:0 7px}}
+/* cross-device consistency (Android / iPhone / laptop) */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{overscroll-behavior:none}
+@supports (height:100dvh){html,body,#app{height:100dvh}}
+button,select{-webkit-appearance:none;appearance:none}
+button,select,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:inherit}
+select{padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;background-size:11px 7px}
+#svg,#cv{color-scheme:light;touch-action:none}
 </style></head><body>
 <div id="app">
 <header id="tb">
@@ -467,7 +477,7 @@ function ui(){
 function after(){sim();render();ui();mkUI();pal(false);try{localStorage.setItem('hes',snapS())}catch(e){}}
 function pal(full=true){const P=$('#pal');
  if(full||!P.children.length){const G=[['Sources',['src','gen']],['Transformers',['tup','tdn']],['Instruments',['mm']],['Loads',['lamp','led','tube','fan','motor','heater','bell']],['Appliances',['ac','fridge','tv','washer','microwave','kettle','iron','pump','pc','oven','iphone']],['Switches',['sw1','sw2','sw2g','sw3g','sw4g','swi','pb','timer','relay']],['Sockets',['sock']],['Protection',['iso','mcb','rcd','rcbo','fuse']],['Distribution',['db','jb','meter','nbar','ebar']],['DC & Solar',['pv','batt','dcsrc','mppt','inv','dciso','dclamp','dcfan','usb','dcpump','dcfridge']]];
-  P.innerHTML=G.map(([g,l])=>`<h3 style="grid-column:1/-1">${g}</h3>`+l.map(t=>`<button class="pi" data-g="${g}" data-ty="${t}" title="${TY[t].n}"><svg viewBox="-54 -54 108 108" data-ic="${t}"></svg>${TY[t].n}</button>`).join('')).join('')+`<h3 style="grid-column:1/-1">Wires</h3>`+[['L','Live','#c0392b'],['N','Neutral','#2563eb'],['E','Earth','#16a34a']].map(([k,n,col])=>`<button class="pi" data-g="Wires" data-wk="${k}"><svg viewBox="-54 -20 108 40"><path d="M-44 0H44" stroke="${col}" stroke-width="6"/>${k=='E'?'<path d="M-44 0H44" stroke="#facc15" stroke-width="6" stroke-dasharray="8 8"/>':''}</svg>${n}</button>`).join('');palFilter();palMark()}
+  P.innerHTML=G.map(([g,l])=>`<h3 style="grid-column:1/-1">${g}</h3>`+l.map(t=>`<button class="pi" data-g="${g}" data-ty="${t}" title="${TY[t].n}"><svg viewBox="-54 -54 108 108" data-ic="${t}"></svg>${TY[t].n}</button>`).join('')).join('');palFilter();palMark()}
  P.querySelectorAll('[data-ic]').forEach(s=>{const t=s.dataset.ic,c={type:t,s:clone(TY[t].s),rot:0};s.innerHTML=body(c,gmode=='sch'?'sch':'real')})}
 /* ---------- editing ---------- */
 function addC(t,x,y){push();const c=mk(t,SN(x),SN(y));comps.push(c);sel=c.id;selW=null;after()}

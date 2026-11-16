@@ -478,17 +478,24 @@ function drawC(c){const T=TY[c.type],m=c.mode||gmode,odd=c.rot%2,eh=odd?T.w:T.h;
  if(m=='hyb'){const bh=.6*(T.h+10);h+=`<g transform="translate(${c.x} ${c.y-eh*SC/2-bh/2-3}) scale(.6)" pointer-events="none" style="color:#111"><rect x="-50" y="${-(T.h+10)/2}" width="100" height="${T.h+10}" rx="8" fill="#fff" stroke="#9ca3af" stroke-width="2"/>${T.sch(c)}</g>`}
  return h+'</g>'}
 function tdir(s){const[i,n]=s.split(':'),c=byId(i),[x,y]=TY[c.type].t[n];let d=x?[Math.sign(x),0]:[0,Math.sign(y)||1];for(let k=0;k<c.rot;k++)d=[-d[1],d[0]];return d}
-function wd(w){const A=tpos(w.a),B=tpos(w.b),da=tdir(w.a),db=tdir(w.b),S=24,ln=LN[w.id]||0,
+function wpts(w,ln){const A=tpos(w.a),B=tpos(w.b),da=tdir(w.a),db=tdir(w.b),S=24,
  a1=[A[0]+da[0]*S,A[1]+da[1]*S],b1=[B[0]+db[0]*S,B[1]+db[1]*S],p=da[0]?0:1,q=1-p,pt=(u,v)=>p==0?[u,v]:[v,u];let pts;
  if(db[p]!=0){const ds=da[p];let m=(a1[p]+b1[p])/2+ln;const ok=(d,a)=>d[p]>0?m>=a[p]-.5:m<=a[p]+.5;
-  if(da[p]==db[p]){m=(ds>0?Math.max(a1[p],b1[p]):Math.min(a1[p],b1[p]))+ds*(8+Math.abs(ln))}
+  if(da[p]==db[p]){m=(ds>0?Math.max(a1[p],b1[p]):Math.min(a1[p],b1[p]))+ds*14+ln}
   if(ok(da,a1)&&ok(db,b1))pts=[A,a1,pt(m,a1[q]),pt(m,b1[q]),b1,B];
   else{let mv=(a1[q]+b1[q])/2+ln;if(Math.abs(a1[q]-b1[q])<2)mv-=40;pts=[A,a1,pt(a1[p],mv),pt(b1[p],mv),b1,B]}}
  else{const fw=(b1[p]-a1[p])*da[p]>=0;pts=[A,a1,fw?pt(b1[p],a1[q]):pt(a1[p],b1[q]),b1,B]}
- return'M'+pts.map(t=>t.join(' ')).join('L')}
+ return pts}
+function wd(w){return'M'+wpts(w,LN[w.id]||0).map(t=>t.join(' ')).join('L')}
 let LN={};
-function lanes(){const g={},o={};wires.forEach(w=>{const a=tpos(w.a),b=tpos(w.b),x=(a[0]+b[0])/2;(g[Math.round(x/12)]=g[Math.round(x/12)]||[]).push({id:w.id,y0:Math.min(a[1],b[1]),y1:Math.max(a[1],b[1])})});
- Object.values(g).forEach(arr=>{arr.sort((p,q)=>p.y0-q.y0||p.y1-q.y1);const ends=[];arr.forEach(s=>{let l=ends.findIndex(e=>e<=s.y0+1);if(l<0){l=ends.length;ends.push(0)}ends[l]=s.y1;s.l=l});const n=ends.length;arr.forEach(s=>o[s.id]=n>1?(s.l-(n-1)/2)*11:0)});return o}
+function lanes(){const o={},items=[];
+ wires.forEach(w=>{const q=wpts(w,0);if(q.length<6)return;const p=Math.abs(q[2][0]-q[3][0])<.5?0:1,r=1-p;items.push({id:w.id,p,m:q[2][p],y0:Math.min(q[2][r],q[3][r]),y1:Math.max(q[2][r],q[3][r])})});
+ [0,1].forEach(p=>{const arr=items.filter(t=>t.p==p).sort((a,b)=>a.m-b.m);let cl=[];
+  const flush=()=>{if(!cl.length)return;const mean=cl.reduce((a,t)=>a+t.m,0)/cl.length;cl.sort((a,b)=>a.y0-b.y0||a.y1-b.y1);const ends=[];
+   cl.forEach(t=>{let l=ends.findIndex(e=>e<t.y0-8);if(l<0){l=ends.length;ends.push(0)}ends[l]=t.y1;t.l=l});
+   const n=ends.length;cl.forEach(t=>o[t.id]=(n>1?mean+(t.l-(n-1)/2)*11:t.m)-t.m);cl=[]};
+  arr.forEach(t=>{if(cl.length&&t.m-cl[cl.length-1].m>=9)flush();cl.push(t)});flush()});
+ return o}
 let CT={};
 function render(){LN=lanes();CT={};wires.forEach(w=>{CT[w.a]=CT[w.b]=WC[w.k]||'#111'});
  let h=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#fde047" stop-opacity=".8"/><stop offset="1" stop-color="#fde047" stop-opacity="0"/></radialGradient><radialGradient id="gr"><stop offset="0" stop-color="#ef4444" stop-opacity=".7"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/></radialGradient><pattern id="g" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e5e7eb"/></pattern></defs><rect id="bgr" x="-5000" y="-5000" width="10000" height="10000" fill="${grid?'url(#g)':'#fff'}"/>`;

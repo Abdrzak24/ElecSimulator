@@ -76,7 +76,7 @@ dialog textarea{font-size:16px}#ctx{font-size:12px}
 }
 .wk{position:relative}
 .wk.sel{transform:scale(1.15);box-shadow:0 0 0 3px #fff,0 0 0 6px #111,0 2px 8px #0006;z-index:2}
-.wk.sel::after{content:'✓';position:absolute;top:-10px;right:-10px;width:18px;height:18px;border-radius:50%;background:#fff;color:#111;border:2px solid #111;font-size:12px;font-weight:700;line-height:14px;text-align:center}
+.wk.sel::after{content:'';box-sizing:content-box;position:absolute;top:-5px;right:-5px;width:8px;height:8px;border-radius:50%;background:#fff;border:2px solid #111}
 #fw .wk:not(.sel){opacity:.55}
 #fw{position:absolute;left:6px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:8px;z-index:6}body.full #fw{display:flex!important}#fw button{width:44px;min-width:44px;min-height:44px;padding:0;color:#fff;font-weight:700;font-size:17px;border-radius:10px;box-shadow:0 1px 4px #0005;opacity:.95}
 #fl{position:absolute;top:6px;left:6px;display:flex;gap:6px;z-index:4}

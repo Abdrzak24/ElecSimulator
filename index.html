@@ -42,6 +42,7 @@ main{flex:1;min-height:0;display:grid;grid-template-columns:230px 1fr 230px}
 .lb{font:11px sans-serif;fill:#374151;text-anchor:middle}
 .lt{font:600 9px sans-serif;fill:#fff;text-anchor:middle}
 .term{fill:transparent;cursor:crosshair}
+.wiring .term{fill:rgba(6,182,212,.16);stroke:#06b6d4;stroke-width:1}
 .body{fill:transparent;cursor:grab}
 .hit{stroke:transparent;stroke-width:14;fill:none;cursor:pointer}
 .flow{stroke:#fff;stroke-width:2;fill:none;stroke-dasharray:3 9;animation:fl .6s linear infinite}
@@ -193,10 +194,12 @@ button.sm{min-height:28px;font-size:12px;padding:0 8px}
 <script>
 const $=s=>document.querySelector(s),clone=o=>JSON.parse(JSON.stringify(o));
 const KC={L:'#dc2626',N:'#2563eb',E:'#16a34a','':'#9ca3af'},WC={L:'#c0392b',N:'#2563eb',E:'#16a34a'};
-const SC=1.5,TR=matchMedia('(pointer:coarse)').matches?14:9;let probe=0,pr=[],dcb=null,SUN=80,SPEED=60;let SUP={v:230,f:50},R={V:0,I:0,P:0},Wh=0;
+const COARSE=matchMedia('(pointer:coarse)').matches,SC=1.5,TR=COARSE?13:10;let probe=0,pr=[],dcb=null,SUN=80,SPEED=60;let SUP={v:230,f:50},R={V:0,I:0,P:0},Wh=0;
 const P=(d,st='')=>`<path class="s" d="${d}" style="${st}"/>`;
 const dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="2.5" fill="currentColor"/>`;
-const plate=(lab,hi)=>`<rect x="-28" y="-26" width="56" height="52" rx="6" fill="#f8f7f2" stroke="#9ca3af" stroke-width="2"/><rect x="-12" y="-17" width="24" height="34" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="-12" y="${hi?-17:0}" width="24" height="17" rx="3" fill="#6b7280" opacity=".55"/><text class="lb" y="4" style="font-size:10px">${lab}</text>`;
+const plate=(lab,hi)=>`<rect x="-30" y="-27" width="60" height="54" rx="7" fill="url(#pl)" stroke="#b8978a" stroke-width="2"/><rect x="-26" y="-23" width="52" height="46" rx="5" fill="#fbf5f1" stroke="#d9bfb3"/><circle cx="-23" cy="-20" r="2" fill="#b8978a"/><circle cx="23" cy="20" r="2" fill="#b8978a"/><rect x="-10" y="-15" width="20" height="30" rx="3" fill="#f1e4dc" stroke="#c9a79a"/><rect x="-10" y="${hi?-15:0}" width="20" height="15" rx="3" fill="#a8806f" opacity=".5"/><text class="lb" y="4" style="font-size:9px">${lab}</text>`;
+const cu=(x1,y1,x2,y2,w=3)=>`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="#8a4b12" stroke-width="${w}" stroke-linecap="round"/>`,cd=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.2" fill="url(#brs)" stroke="#6b3410" stroke-width=".8"/>`;
+const face=(inner)=>`<rect x="-30" y="-30" width="60" height="60" rx="7" fill="url(#pl)" stroke="#b8978a" stroke-width="2"/><rect x="-25" y="-25" width="50" height="50" rx="5" fill="#fbf5f1" stroke="#d9bfb3"/><circle cx="-23" cy="-23" r="2" fill="#b8978a"/><circle cx="23" cy="23" r="2" fill="#b8978a"/>`+inner;
 const mod=(c,x,y,w,h)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="#d9dde3" stroke="#8a94a3" stroke-width="2"/><rect x="${x+4}" y="${y+(c.s.on?4:h/2)}" width="${w-8}" height="${h/2-4}" rx="2" fill="${c.s.on?'#16a34a':'#dc2626'}"/>`;
 const MS=c=>P('M-40 0H-16M16 0H40')+`<circle class="s" r="16" style="fill:${c.lit?'#bbf7d0':'none'}"/><text class="lb" y="5" style="font-size:15px">M</text>`;
 const AB={A:[-40,0,''],B:[40,0,'']};
@@ -208,25 +211,25 @@ src:{n:'AC Source',w:80,h:60,lx:28,s:{},t:{L:[40,-20,'L'],N:[40,0,'N'],E:[40,20,
  real:c=>`<rect x="-28" y="-26" width="56" height="52" rx="6" fill="#1e3a5f"/><rect x="-22" y="-20" width="44" height="26" rx="3" fill="#0b1220"/><path d="M-18 -7q4.5-10 9 0t9 0t9 0t9 0" stroke="#4ade80" fill="none" stroke-width="2"/><text class="lt" y="21">${SUP.v}V ${SUP.f}Hz</text>`},
 lamp:{n:'Lamp',w:80,h:60,lx:17,s:{},t:{A:[-40,0,''],B:[40,0,'']},
  sch:c=>P('M-40 0H-14M14 0H40M-10 -10L10 10M10 -10L-10 10')+`<circle class="s" r="14" style="fill:${c.lit?'#ffe066':'none'}"/>`,
- real:c=>(c.lit?'<circle cy="-4" r="36" fill="url(#gl)"/>':'')+`<circle cy="-4" r="17" fill="${c.lit?'#fff3a3':'#e0f2fe'}" stroke="#64748b" stroke-width="2"/>`+P('M-6 8V0Q0 -12 6 0V8','stroke:#92400e')+`<rect x="-8" y="12" width="16" height="12" rx="2" fill="#9ca3af" stroke="#64748b"/>`},
+ real:c=>(c.lit?'<circle cy="-6" r="38" fill="url(#gl)"/>':'')+`<path d="M-7 14C-7 8 -17 4 -17 -6A17 17 0 1 1 17 -6C17 4 7 8 7 14Z" fill="${c.lit?'url(#glw)':'url(#gls)'}" stroke="#8fa3b8" stroke-width="1.6"/><ellipse cx="-7" cy="-14" rx="4" ry="7" fill="#fff" opacity=".6" transform="rotate(25 -7 -14)"/><path d="M-5 13V3M5 13V3M-5 3Q-2.5 -7 0 3Q2.5 -7 5 3" fill="none" stroke="${c.lit?'#f59e0b':'#7b8794'}" stroke-width="1.5"/><rect x="-8" y="13" width="16" height="14" rx="2" fill="url(#brs)" stroke="#6b3410" stroke-width=".8"/><path d="M-8 17H8M-8 21H8M-8 25H8" stroke="#6b3410" stroke-width=".8" opacity=".6"/><path d="M-4 27h8l-2 3h-4z" fill="#374151"/>`},
 led:{n:'LED',w:80,h:60,lx:12,s:{},t:{A:[-40,0,''],B:[40,0,'']},
  sch:c=>P('M-40 0H-10M10 0H40M10 -12V12M-4 -14L4 -24M0 -24H4V-20M4 -10L12 -20M8 -20H12V-16')+`<path class="s" d="M-10 -12V12L10 0Z" style="fill:${c.lit?'#ef4444':'none'}"/>`,
  real:c=>(c.lit?'<circle r="30" fill="url(#gr)"/>':'')+`<path d="M-10 12V-6A10 10 0 0 1 10 -6V12Z" fill="${c.lit?'#ff5252':'#9b2c2c'}" stroke="#7f1d1d" stroke-width="2"/><rect x="-13" y="12" width="26" height="4" fill="#9ca3af"/><path d="M-5 16V24M5 16V24" stroke="#6b7280" stroke-width="2"/>`},
 sw1:{n:'1-way Switch',w:80,h:60,lx:28,s:{on:0},t:{A:[-40,0,''],B:[40,0,'']},
  sch:c=>P('M-40 0H-14M14 0H40M-14 0L'+(c.s.on?'14 0':'12 -14'))+dot(-14,0)+dot(14,0),
- real:c=>plate('1',c.s.on)},
+ real:c=>face(cu(-30,0,-16,0)+cu(16,0,30,0)+cu(-16,0,c.s.on?16:12,c.s.on?0:-14,3.4)+cd(-16,0)+cd(16,0)+`<text class="lb" x="-16" y="14" style="font-size:7px">L</text><text class="lb" x="16" y="14" style="font-size:7px">L1</text>`)},
 sw2:{n:'2-way Switch',w:80,h:60,lx:28,s:{pos:0},t:{C:[-40,0,''],L1:[40,-20,''],L2:[40,20,'']},
  sch:c=>P('M-40 0H-14M14 -20H40M14 20H40M-14 0L14 '+(c.s.pos?20:-20))+dot(-14,0)+dot(14,-20)+dot(14,20),
- real:c=>plate('2',c.s.pos)},
+ real:c=>face(cu(-30,0,-16,0)+cu(16,-20,30,-20)+cu(16,20,30,20)+cu(-16,0,16,c.s.pos?20:-20,3.4)+cd(-16,0)+cd(16,-20)+cd(16,20)+`<text class="lb" x="-16" y="13" style="font-size:7px">L</text><text class="lb" x="16" y="-26" style="font-size:7px">L1</text><text class="lb" x="16" y="31" style="font-size:7px">L2</text>`)},
 swi:{n:'Intermediate',w:80,h:60,lx:28,s:{pos:0},t:{A1:[-40,-20,''],A2:[-40,20,''],B1:[40,-20,''],B2:[40,20,'']},
  sch:c=>P('M-40 -20H-14M-40 20H-14M14 -20H40M14 20H40'+(c.s.pos?'M-14 -20L14 20M-14 20L14 -20':'M-14 -20H14M-14 20H14'))+`<rect class="s" x="-14" y="-28" width="28" height="56" stroke-dasharray="3 3"/>`,
- real:c=>plate('X',c.s.pos)},
+ real:c=>face(cu(-30,-20,-16,-20)+cu(-30,20,-16,20)+cu(16,-20,30,-20)+cu(16,20,30,20)+(c.s.pos?cu(-16,-20,16,20,3)+cu(-16,20,16,-20,3):cu(-16,-20,16,-20,3)+cu(-16,20,16,20,3))+cd(-16,-20)+cd(-16,20)+cd(16,-20)+cd(16,20))},
 sock:{n:'Socket',w:80,h:60,lx:28,s:{plug:0},t:{L:[-40,-20,'L'],N:[-40,0,'N'],E:[-40,20,'E']},
  sch:c=>P('M-40 -20H0M-40 0H0M-40 20H0M0 -22A22 22 0 0 1 0 22M0 -22V22')+(c.s.plug?P('M6 -8H26M6 8H26'):''),
  real:c=>`<rect x="-28" y="-28" width="56" height="56" rx="6" fill="#fff" stroke="#9ca3af" stroke-width="2"/><rect x="-3" y="-18" width="6" height="12" fill="#374151"/><rect x="-14" y="6" width="6" height="12" fill="#374151"/><rect x="8" y="6" width="6" height="12" fill="#374151"/>`+(c.s.plug?`<rect x="-18" y="-22" width="36" height="42" rx="6" fill="#f97316" opacity=".9"/><text class="lt" y="4">PLUG</text>`:'')+`<circle cx="21" cy="-21" r="3" fill="${c.hot?'#22c55e':'#d1d5db'}"/>`},
-mcb:{n:'MCB',w:80,h:60,lx:16,s:{on:1,rate:16},t:{A:[-40,0,''],B:[40,0,'']},
- sch:c=>P('M-40 0H-14M14 0H40M-14 0L'+(c.s.on?'14 0':'12 -16')+'M10 -5L18 5M18 -5L10 5')+dot(-14,0)+`<text class="lb" y="22">MCB</text>`,
- real:c=>mod(c,-16,-28,32,56)},
+mcb:{n:'MCB',w:56,h:108,lx:40,ly:40,s:{on:1,rate:16},t:{A:[0,-48,''],B:[0,48,'']},
+ sch:c=>P('M0 -48V-14M0 14V48M0 14L'+(c.s.on?'0 -14':'-12 -10')+'M5 -4L13 6M13 -4L5 6')+dot(0,14)+dot(0,-14)+`<text class="lb" x="24" y="3">MCB</text>`,
+ real:c=>{const on=c.s.on,rt=c.s.rate||16;return `<rect x="-14" y="-54" width="28" height="14" rx="3" fill="#2b303a" stroke="#0b0d12"/><rect x="-14" y="40" width="28" height="14" rx="3" fill="#2b303a" stroke="#0b0d12"/><rect x="-24" y="-40" width="48" height="80" rx="5" fill="url(#blk)" stroke="#000" stroke-width="2"/><rect x="-15" y="-30" width="30" height="46" rx="4" fill="#0b0d12" stroke="#4b5563"/><rect x="-10" y="${on?-28:-6}" width="20" height="20" rx="3" fill="url(#lvg)" stroke="#374151"/><path d="M-6 ${on?-22:-0}H6M-6 ${on?-18:4}H6M-6 ${on?-14:8}H6" stroke="#6b7280" stroke-width="1"/><circle cx="0" cy="${on?-6:14}" r="2.3" fill="${on?'#22c55e':'#ef4444'}"/><text class="lt" y="-33" style="font-size:7px">ON</text><text class="lt" y="25" style="font-size:7px">OFF</text><text class="lt" y="35" style="font-size:6.5px;fill:#cbd5e1">AC/${rt}A</text>`}},
 rcd:{n:'RCD / RCCB',w:80,h:60,lx:24,s:{on:1},t:{LI:[-40,-20,'L'],NI:[-40,20,'N'],LO:[40,-20,'L'],NO:[40,20,'N']},
  sch:c=>P('M-40 -20H-24M-40 20H-24M24 -20H40M24 20H40')+`<rect class="s" x="-24" y="-28" width="48" height="56" stroke-dasharray="3 3"/>`+P(c.s.on?'M-24 -20H24M-24 20H24':'M-24 -20H-2L10 -30M-24 20H-2L10 10')+`<ellipse class="s" rx="5" ry="22"/>`,
  real:c=>mod(c,-24,-28,48,56)+`<circle cx="12" cy="16" r="6" fill="#facc15" stroke="#a16207"/><text class="lb" x="12" y="19" style="font-size:8px">T</text>`},
@@ -290,9 +293,10 @@ const ACTS={
  db:c=>[0,1].map(i=>['Breaker L'+(i+1)+' '+(c.s.b[i]?'OFF':'ON'),c=>c.s.b[i]^=1])};
 const NOCLICK={db:1,pb:1};const LOADS={lamp:60,led:5,tube:36,bell:8,fan:75,motor:750,heater:2000,ac:1500,fridge:150,tv:100,washer:500,microwave:1200,kettle:2000,iron:1000,pump:750,pc:200,oven:3000,iphone:10};
 TY.rcbo={...TY.rcd,n:'RCBO',sch:c=>TY.rcd.sch(c)+`<text class="lb" y="42">RCBO</text>`};TY.rcbo.s={on:1,rate:16};ACTS.rcbo=ACTS.rcd;
-TY.cb={n:'CB (Circuit Breaker)',w:80,h:60,lx:24,s:{on:1,rate:63},t:{LI:[-40,-20,'L'],NI:[-40,20,'N'],LO:[40,-20,'L'],NO:[40,20,'N']},
- sch:c=>P('M-40 -20H-24M-40 20H-24M24 -20H40M24 20H40')+`<rect class="s" x="-24" y="-28" width="48" height="56"/>`+P(c.s.on?'M-24 -20H24M-24 20H24':'M-24 -20H-2L10 -30M-24 20H-2L10 10')+`<text class="lb" y="42">CB</text>`,
- real:c=>`<rect x="-24" y="-28" width="48" height="56" rx="4" fill="#1f2937" stroke="#0f172a" stroke-width="2"/><rect x="-16" y="-22" width="32" height="26" rx="3" fill="#374151"/><rect x="-6" y="${c.s.on?-20:-8}" width="12" height="14" rx="2" fill="${c.s.on?'#22c55e':'#ef4444'}"/><text class="lt" y="17" style="font-size:9px">${c.s.rate} A</text><text class="lt" y="25" style="font-size:7px;fill:#9ca3af">CB · 2P</text>`};
+TY.cb={n:'CB (Circuit Breaker)',w:80,h:108,lx:40,ly:40,s:{on:1,rate:63},t:{LI:[-18,-48,'L'],NI:[18,-48,'N'],LO:[-18,48,'L'],NO:[18,48,'N']},
+ sch:c=>P('M-18 -48V-30M18 -48V-30M-18 30V48M18 30V48')+`<rect class="s" x="-28" y="-30" width="56" height="60"/>`+P(c.s.on?'M-18 -30V30M18 -30V30':'M-18 -30V-6L-8 10M18 -30V-6L28 10')+`<text class="lb" y="-35" style="font-size:9px">CB</text>`,
+ real:c=>{const on=c.s.on,rt=c.s.rate||63,lv=x=>`<rect x="${x-9}" y="${on?-26:-4}" width="18" height="22" rx="3" fill="url(#lev)" stroke="#1e3a8a"/><rect x="${x-6}" y="${on?-23:-1}" width="12" height="4" rx="1.5" fill="#fff" opacity=".35"/><rect x="${x-3}" y="${on?-33:-12}" width="6" height="4" rx="1" fill="${on?'#22c55e':'#9ca3af'}"/>`;
+  return `<rect x="-30" y="-54" width="60" height="14" rx="3" fill="#cfd6df" stroke="#8a94a3"/><rect x="-30" y="40" width="60" height="14" rx="3" fill="#cfd6df" stroke="#8a94a3"/><rect x="-36" y="-40" width="72" height="80" rx="5" fill="url(#wht)" stroke="#8a94a3" stroke-width="2"/><rect x="-28" y="-30" width="56" height="44" rx="4" fill="#c9d0da" stroke="#9aa4b2"/>`+lv(-18)+lv(18)+`<rect x="-18" y="${on?-12:10}" width="36" height="5" rx="2" fill="#9aa4b2"/><text class="lb" y="28" style="font-size:8px;fill:#1f2937;font-weight:700">AC/${rt}A</text><text class="lb" y="37" style="font-size:6px;fill:#64748b">CB · 2P</text>`}};
 ACTS.cb=c=>[[c.s.on?'Switch OFF':'Switch ON',c=>c.s.on^=1],['Test (trip)',c=>c.s.on=0]];
 TY.timer={...TY.sw1,n:'Timer Switch (10 s)',s:{on:0,t0:0},real:c=>plate('⏱',c.s.on)};ACTS.timer=c=>[[c.s.on?'Turn OFF':'Start 10 s timer',c=>{c.s.on^=1;c.s.t0=Date.now()}]];
 TY.sw2g={n:'2-Gang Switch',w:80,h:60,lx:28,s:{a:0,b:0},t:{IN:[-40,0,''],O1:[40,-20,''],O2:[40,20,'']},sch:c=>P('M-40 0H-14M14 -20H40M14 20H40M-14 0L'+(c.s.a?'14 -20':'12 -6')+'M-14 0L'+(c.s.b?'14 20':'12 6'))+dot(-14,0)+dot(14,-20)+dot(14,20),real:c=>`<rect x="-28" y="-26" width="56" height="52" rx="6" fill="#f8f7f2" stroke="#9ca3af" stroke-width="2"/>`+[[-22,c.s.a],[2,c.s.b]].map(([x,v])=>`<rect x="${x}" y="-17" width="20" height="34" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="${x}" y="${v?-17:0}" width="20" height="17" rx="3" fill="#6b7280" opacity=".55"/>`).join('')};ACTS.sw2g=c=>[['Gang 1 '+(c.s.a?'OFF':'ON'),c=>c.s.a^=1],['Gang 2 '+(c.s.b?'OFF':'ON'),c=>c.s.b^=1]];
@@ -473,15 +477,19 @@ function meter(){$('#iv').textContent=R.V.toFixed(1);$('#ii').textContent=R.I.to
  $('#spv').textContent=Math.round(R.pv||0);$('#sdc').textContent=Math.round(R.dc||0);$('#ssoc').textContent=R.soc==null?'–':Math.round(R.soc)+'% ('+(R.flow>=0?'+':'')+Math.round(R.flow||0)+' W)';
  const st=$('#st');st.textContent=!running?'':R.short?' ⚠ FAULT':' ● Running';st.style.color=R.short?'#dc2626':'#16a34a'}
 /* ---------- rendering ---------- */
-function body(c,m){const T=TY[c.type];return m=='sch'?T.sch(c):Object.values(T.t).map(([x,y])=>`<path d="M${x} ${y}H${Math.sign(x)*T.lx}" stroke="#6b7280" stroke-width="3"/>`).join('')+T.real(c)}
+function body(c,m){const T=TY[c.type];return m=='sch'?T.sch(c):Object.values(T.t).map(([x,y])=>tax(T,x,y)=='v'?`<path d="M${x} ${y}V${Math.sign(y)*(T.ly||T.lx)}" stroke="#6b7280" stroke-width="3"/>`:`<path d="M${x} ${y}H${Math.sign(x)*T.lx}" stroke="#6b7280" stroke-width="3"/>`).join('')+T.real(c)}
 function drawC(c){const T=TY[c.type],m=c.mode||gmode,odd=c.rot%2,eh=odd?T.w:T.h;let h=`<g data-id="${c.id}"><g transform="translate(${c.x} ${c.y}) rotate(${c.rot*90}) scale(${SC})">`;
  h+=body(c,m)+`<rect class="body" x="${-T.w/2}" y="${-T.h/2}" width="${T.w}" height="${T.h}"/>`;
  if(sel==c.id)h+=`<rect x="${-T.w/2-2}" y="${-T.h/2-2}" width="${T.w+4}" height="${T.h+4}" rx="6" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4" pointer-events="none"/>`;
- h+=Object.entries(T.t).map(([n,[x,y,k]])=>`<circle cx="${x}" cy="${y}" r="${CT[c.id+':'+n]?5:4}" fill="${CT[c.id+':'+n]||KC[k]}" stroke="${CT[c.id+':'+n]?'#fff':'#111'}" stroke-width="${CT[c.id+':'+n]?1.6:1}" pointer-events="none"/><circle class="term" data-t="${c.id}:${n}" cx="${x}" cy="${y}" r="${TR}"/>`).join('')+'</g>';
+ h+=Object.entries(T.t).map(([n,[x,y,k]])=>{const id=c.id+':'+n,w=CT[id],hit=`<circle class="term" data-t="${id}" cx="${x}" cy="${y}" r="${TR}"/>`;
+  if(m=='sch')return `<circle cx="${x}" cy="${y}" r="${w?5:4}" fill="${w||KC[k]}" stroke="${w?'#fff':'#111'}" stroke-width="${w?1.6:1}" pointer-events="none"/>`+hit;
+  const ring=w||(k?KC[k]:'');
+  return `<g pointer-events="none"><circle cx="${x}" cy="${y}" r="8.6" fill="url(#tcu)" stroke="#7c2d12" stroke-width="1"/>${ring?`<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${ring}" stroke-width="2.6"/>`:''}<circle cx="${x}" cy="${y}" r="3.9" fill="#2a1a0e" stroke="#e7a25b" stroke-width=".8"/><path d="M${x-2.8} ${y+.8}L${x+2.8} ${y-.8}" stroke="#9ca3af" stroke-width="1.1"/></g>`+hit}).join('')+'</g>';
  h+=`<text class="lb" x="${c.x}" y="${c.y+eh*SC/2+14}">${T.n}${c.s.rate?' '+c.s.rate+'A':''}${c.s.dead?' ✖':''}${c.s.leak?' ⚡':''}${c.low?' ↓V':''}</text>`;
  if(m=='hyb'){const bh=.6*(T.h+10);h+=`<g transform="translate(${c.x} ${c.y-eh*SC/2-bh/2-3}) scale(.6)" pointer-events="none" style="color:#111"><rect x="-50" y="${-(T.h+10)/2}" width="100" height="${T.h+10}" rx="8" fill="#fff" stroke="#9ca3af" stroke-width="2"/>${T.sch(c)}</g>`}
  return h+'</g>'}
-function tdir(s){const[i,n]=s.split(':'),c=byId(i),[x,y]=TY[c.type].t[n];let d=x?[Math.sign(x),0]:[0,Math.sign(y)||1];for(let k=0;k<c.rot;k++)d=[-d[1],d[0]];return d}
+const tax=(T,x,y)=>Math.abs(x)/(T.w/2)>=Math.abs(y)/(T.h/2)?'h':'v';
+function tdir(s){const[i,n]=s.split(':'),c=byId(i),T=TY[c.type],[x,y]=T.t[n];let d=tax(T,x,y)=='h'?[Math.sign(x)||1,0]:[0,Math.sign(y)||1];for(let k=0;k<c.rot;k++)d=[-d[1],d[0]];return d}
 function wpts(w,ln){const A=tpos(w.a),B=tpos(w.b),da=tdir(w.a),db=tdir(w.b),S=24,
  a1=[A[0]+da[0]*S,A[1]+da[1]*S],b1=[B[0]+db[0]*S,B[1]+db[1]*S],p=da[0]?0:1,q=1-p,pt=(u,v)=>p==0?[u,v]:[v,u];let pts;
  if(db[p]!=0){const ds=da[p];let m=(a1[p]+b1[p])/2+ln;const ok=(d,a)=>d[p]>0?m>=a[p]-.5:m<=a[p]+.5;
@@ -502,9 +510,9 @@ function lanes(){const o={},items=[];
  return o}
 let CT={};
 function render(){LN=lanes();CT={};wires.forEach(w=>{CT[w.a]=CT[w.b]=WC[w.k]||'#111'});
- let h=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#fde047" stop-opacity=".8"/><stop offset="1" stop-color="#fde047" stop-opacity="0"/></radialGradient><radialGradient id="gr"><stop offset="0" stop-color="#ef4444" stop-opacity=".7"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/></radialGradient><pattern id="g" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e5e7eb"/></pattern></defs><rect id="bgr" x="-5000" y="-5000" width="10000" height="10000" fill="${grid?'url(#g)':'#fff'}"/>`;
+ let h=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#fde047" stop-opacity=".8"/><stop offset="1" stop-color="#fde047" stop-opacity="0"/></radialGradient><radialGradient id="gr"><stop offset="0" stop-color="#ef4444" stop-opacity=".7"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/></radialGradient><radialGradient id="tcu" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fcd9a0"/><stop offset=".55" stop-color="#e08a2e"/><stop offset="1" stop-color="#9a4a0e"/></radialGradient><linearGradient id="blk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b0d12"/><stop offset=".3" stop-color="#3a3f4a"/><stop offset="1" stop-color="#0b0d12"/></linearGradient><linearGradient id="wht" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cbd5e1"/><stop offset=".3" stop-color="#f8fafc"/><stop offset="1" stop-color="#cbd5e1"/></linearGradient><linearGradient id="pl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e9e2"/><stop offset="1" stop-color="#e3c7b9"/></linearGradient><linearGradient id="lev" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".4" stop-color="#5b7cf7"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient><linearGradient id="lvg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b7280"/><stop offset=".4" stop-color="#e5e7eb"/><stop offset="1" stop-color="#6b7280"/></linearGradient><linearGradient id="brs" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#92400e"/><stop offset=".35" stop-color="#fcd34d"/><stop offset="1" stop-color="#92400e"/></linearGradient><radialGradient id="gls" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#bcd3e6" stop-opacity=".55"/></radialGradient><radialGradient id="glw" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fffef0"/><stop offset="1" stop-color="#fde047"/></radialGradient><pattern id="g" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e5e7eb"/></pattern></defs><rect id="bgr" x="-5000" y="-5000" width="10000" height="10000" fill="${grid?'url(#g)':'#fff'}"/>`;
  h+=wires.map(w=>{const d=wd(w);return`<g data-w="${w.id}"><path class="hit" d="${d}"/>`+(selW==w.id?`<path d="${d}" fill="none" stroke="#f59e0b" stroke-width="9" opacity=".5"/>`:'')+(running&&w.live?`<path d="${d}" fill="none" stroke="#fde68a" stroke-width="9" opacity=".6"/>`:'')+`<path d="${d}" fill="none" stroke="${WC[w.k]}" stroke-width="4" pointer-events="none"/>`+(w.k=='E'?`<path d="${d}" fill="none" stroke="#facc15" stroke-width="4" stroke-dasharray="8 8" pointer-events="none"/>`:'')+(w.flow?`<path class="flow" d="${d}" pointer-events="none"/>`:'')+'</g>'}).join('');
- h+=comps.map(drawC).join('')+marksSVG()+'<path id="pv" fill="none" stroke="#6b7280" stroke-width="3" stroke-dasharray="4 4" pointer-events="none"/>';
+ h+=comps.map(drawC).join('')+marksSVG()+'<path id="pv" fill="none" stroke="#6b7280" stroke-width="3" stroke-dasharray="4 4" pointer-events="none"/><circle id="snap" r="17" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="3" display="none" pointer-events="none"/>';
  $('#vp').innerHTML=h;applyView()}
 function applyView(){$('#vp').setAttribute('transform',`translate(${view.x} ${view.y}) scale(${view.z})`);$('#zl').textContent=Math.round(view.z*100)+'%'}
 function ui(){
@@ -526,6 +534,8 @@ function addC(t,x,y){push();const c=mk(t,SN(x),SN(y));comps.push(c);sel=c.id;sel
 function toggle(c,e){const n=GANG[c.type];if(n||c.type=='db'){const[x,y]=wpt(e);let lx=x-c.x,ly=y-c.y;for(let i=0;i<c.rot;i++){const t=lx;lx=ly;ly=-t}lx/=SC;ly/=SC;if(n){const rw=n==4?16:20,pw=n*rw+8,i=Math.min(n-1,Math.max(0,Math.floor((lx+pw/2-4)/rw)));gg(c)[i]^=1}else{const sch=(c.mode||gmode)=='sch',i=sch?(ly<-30?0:1):(lx<-2?0:1);c.s.b[i]^=1}after();return}const a=ACTS[c.type];if(a&&!NOCLICK[c.type]){a(c)[0][1](c);after()}}
 function del(){if(sel){push();comps=comps.filter(c=>c.id!=sel);wires=wires.filter(w=>!w.a.startsWith(sel+':')&&!w.b.startsWith(sel+':'));sel=null}else if(selW){push();wires=wires.filter(w=>w.id!=selW);selW=null}else return;after()}
 function zoomAt(cx,cy,f){const r=$('#svg').getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top,nz=Math.min(3,Math.max(.3,view.z*f));view.x=sx-(sx-view.x)*nz/view.z;view.y=sy-(sy-view.y)*nz/view.z;view.z=nz;applyView()}
+function nearTerm(e,px,ex){const[wx,wy]=wpt(e),r=px/view.z;let best=null,bd=r;comps.forEach(c=>Object.keys(TY[c.type].t).forEach(n=>{const id=c.id+':'+n;if(id==ex)return;const[x,y]=tpos(id),d=Math.hypot(x-wx,y-wy);if(d<bd){bd=d;best=id}}));return best}
+const TH0=COARSE?22:14,TH1=COARSE?42:26;
 const wpt=e=>{const r=$('#svg').getBoundingClientRect();return[(e.clientX-r.left-view.x)/view.z,(e.clientY-r.top-view.y)/view.z]};
 function demo(){push();comps=[];wires=[];sel=selW=null;nid=1;
  const a=(t,x,y)=>{const c=mk(t,x,y);comps.push(c);return c.id},s=a('src',90,180),m=a('mcb',255,150),w=a('sw1',420,150),l=a('lamp',585,150),d=a('led',585,270);
@@ -557,9 +567,9 @@ let gm=null;const g2=()=>{const[p,q]=[...ptrs.values()];return{d:Math.hypot(p.x-
 const ptrs=new Map();let drag=null,pd=0;
 svg.onpointerdown=e=>{document.querySelectorAll('.panel.open').forEach(x=>x.classList.remove('open'));svg.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
  if(ptrs.size>2)return;
- if(ptrs.size==2){if(drag&&drag.c&&drag.c.type=='pb'){drag.c.s.on=0;drag=null;after()}drag=null;const g=g2();gm={pd:g.d,pmx:g.mx,pmy:g.my,sp:0,sz:0,mode:null};render();return}
- const t=e.target,tm=t.closest('[data-t]'),cm=t.closest('[data-id]'),wm=t.closest('[data-w]');
- if(tm&&probe)doProbe(tm.dataset.t);else if(tm){drag={k:'wire',from:tm.dataset.t};sel=selW=null;ui()}
+ if(ptrs.size==2){if(drag&&drag.c&&drag.c.type=='pb'){drag.c.s.on=0;drag=null;after()}drag=null;svg.classList.remove('wiring');const g=g2();gm={pd:g.d,pmx:g.mx,pmy:g.my,sp:0,sz:0,mode:null};render();return}
+ const t=e.target,tm=t.closest('[data-t]'),cm=t.closest('[data-id]'),wm=t.closest('[data-w]'),tid=tm?tm.dataset.t:(probe?null:nearTerm(e,TH0));
+ if(tid&&probe)doProbe(tid);else if(tid){drag={k:'wire',from:tid};sel=selW=null;svg.classList.add('wiring');ui()}
  else if(cm){const c=byId(cm.dataset.id);sel=c.id;selW=null;drag={k:moveOn?'move':'pan',c,sx:e.clientX,sy:e.clientY,ox:c.x,oy:c.y,vx:view.x,vy:view.y,moved:0};if(c.type=='pb'){c.s.on=1;sim()}render();ui()}
  else if(wm){selW=wm.dataset.w;sel=null;drag=null;render();ui()}
  else{if(sel||selW){sel=selW=null;render();ui()}drag={k:'pan',sx:e.clientX,sy:e.clientY,vx:view.x,vy:view.y}}};
@@ -572,12 +582,12 @@ svg.onpointermove=e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e
  if(!drag)return;const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
  if(drag.k=='pan'){view.x=drag.vx+dx;view.y=drag.vy+dy;applyView()}
  else if(drag.k=='move'){if(!drag.moved&&Math.hypot(dx,dy)<4)return;if(!drag.moved){push();drag.moved=1}drag.c.x=SN(drag.ox+dx/view.z);drag.c.y=SN(drag.oy+dy/view.z);render()}
- else if(drag.k=='wire'){const[ax,ay]=tpos(drag.from),[x,y]=wpt(e),pv=$('#pv');if(pv)pv.setAttribute('d',`M${ax} ${ay}L${x} ${y}`)}};
+ else if(drag.k=='wire'){const[ax,ay]=tpos(drag.from),nt=nearTerm(e,TH1,drag.from),[x,y]=nt?tpos(nt):wpt(e),pv=$('#pv'),sn=$('#snap');if(pv)pv.setAttribute('d',`M${ax} ${ay}L${x} ${y}`);if(sn){if(nt){sn.setAttribute('cx',x);sn.setAttribute('cy',y);sn.setAttribute('display','inline')}else sn.setAttribute('display','none')}}};
 svg.onpointerup=svg.onpointercancel=e=>{ptrs.delete(e.pointerId);pd=0;if(ptrs.size<2)gm=null;if(!drag)return;const d=drag;drag=null;
  if(d.c&&d.c.type=='pb'){d.c.s.on=0;after()}else if(d.k=='move'&&!d.moved)toggle(d.c,e);
  else if(d.k=='move')after();
- else if(d.k=='wire'){const el=document.elementFromPoint(e.clientX,e.clientY),to=el&&el.closest&&el.closest('[data-t]');
-  if(to&&to.dataset.t!=d.from&&!wires.some(w=>(w.a==d.from&&w.b==to.dataset.t)||(w.b==d.from&&w.a==to.dataset.t))){push();wires.push({id:'w'+nid++,a:d.from,b:to.dataset.t,k:wk});after()}else render()}};
+ else if(d.k=='wire'){svg.classList.remove('wiring');const el=document.elementFromPoint(e.clientX,e.clientY),dt=el&&el.closest&&el.closest('[data-t]'),to=nearTerm(e,TH1,d.from)||(dt&&dt.dataset.t!=d.from?dt.dataset.t:null);
+  if(to&&!wires.some(w=>(w.a==d.from&&w.b==to)||(w.b==d.from&&w.a==to))){push();wires.push({id:'w'+nid++,a:d.from,b:to,k:wk});after()}else render()}};
 addEventListener('keydown',e=>{if(['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName)||document.querySelector('dialog[open]'))return;const k=e.key.toLowerCase();
  if(k=='delete'||k=='backspace')del();else if((e.ctrlKey||e.metaKey)&&k=='z'){e.preventDefault();e.shiftKey?doRedo():doUndo()}else if((e.ctrlKey||e.metaKey)&&k=='y')doRedo();else if(k=='r')ACT.rot()});
 /* ---------- problem finder: list, fix hints, mark on design ---------- */

@@ -181,6 +181,30 @@ body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var
 #ctx button{min-height:28px;min-width:0;padding:0 14px;border:0;border-radius:999px;background:transparent;font-size:12px;font-weight:600;letter-spacing:.2px}
 #ctx button:hover,#ctx button:active{background:var(--ac);color:#fff}
 #ctx b{margin:0 4px 0 10px;font-size:12px;font-weight:600;color:var(--mut)}
+
+#sm{gap:5px}#sm button{min-height:34px}#modeseg{display:flex;border:1px solid var(--bd);border-radius:999px;overflow:hidden;flex:none}
+#modeseg button{flex:1;border:0;border-radius:0;min-height:30px;font-size:12px;font-weight:600;background:transparent}
+#modeseg button.on{background:var(--ac);color:#fff}
+#ctx select{min-height:28px;min-width:0;padding:0 6px;border:0;border-radius:999px;background:transparent;font-size:12px;font-weight:600}
+#ctx .cnt{font-size:12px;font-weight:600;color:var(--mut);padding:0 10px}
+body #fl #bsel.on{color:#2563eb;background:color-mix(in srgb,#2563eb 16%,transparent)}
+#tip{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(66px + env(safe-area-inset-bottom,0px));max-width:min(420px,calc(100vw - 24px));padding:6px 14px;border-radius:999px;background:color-mix(in srgb,var(--pn) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--bd);font-size:12px;color:var(--mut);z-index:11;text-align:center;pointer-events:none}
+#tip[hidden]{display:none}
+#lsn{position:absolute;left:10px;top:10px;z-index:4;width:min(270px,calc(100% - 96px));background:color-mix(in srgb,var(--pn) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 6px 22px #0003;padding:10px 12px;font-size:12px}
+#lsn[hidden]{display:none}
+#lsn .lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px}
+#lsn .lh button{min-height:24px;min-width:24px;border:0;background:transparent;padding:0}
+#lsn .ls{display:flex;gap:8px;padding:3px 0;color:var(--mut);align-items:flex-start}
+#lsn .ls span{flex:none;width:16px;height:16px;border-radius:50%;border:1px solid var(--bd);display:grid;place-items:center;font-size:10px;margin-top:1px}
+#lsn .ls.d{color:var(--ink)}#lsn .ls.d span{background:#16a34a;border-color:#16a34a;color:#fff}
+#lsn .ls.n{color:var(--ink);font-weight:600}#lsn .ls.n span{border-color:var(--ac);color:var(--ac)}
+#lsn .lhint{margin:6px 0;padding:6px 8px;border-radius:8px;background:var(--bg);color:var(--mut)}
+#lsn .lb2{display:flex;gap:6px;margin-top:6px}#lsn .lb2 button{min-height:26px;font-size:12px;padding:0 10px;border-radius:999px}
+.lsl{display:flex;flex-direction:column;gap:6px}
+.lsi{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:8px 10px;min-height:0;height:auto;width:100%}
+.lsi em{font-style:normal;font-size:10px;color:#fff;border-radius:999px;padding:1px 7px;margin-left:6px}
+.lsk{width:16px;color:#16a34a;font-weight:700;flex:none}
+.bomt{width:100%;border-collapse:collapse;font-size:13px}.bomt td,.bomt th{padding:5px 6px;border-bottom:1px solid var(--bd);text-align:left}.bomt td:last-child{text-align:right;white-space:nowrap}.bomt th{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
 </style></head><body>
 <div id="app">
 <header id="tb">
@@ -195,12 +219,17 @@ body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var
  </div>
  <div id="wm" class="pop" hidden><button class="wk" data-a="wL" id="wL" style="background:#dc2626" title="Live wire">L · Live</button><button class="wk" data-a="wN" id="wN" style="background:#2563eb" title="Neutral wire">N · Neutral</button><button class="wk" data-a="wE" id="wE" style="background:#16a34a" title="Earth wire">E · Earth</button><button class="wk" data-a="wP" id="wP" style="background:#ea580c" title="DC + wire">+ · DC positive</button><button class="wk" data-a="wM" id="wM" style="background:#111827" title="DC − wire">− · DC negative</button></div>
  <div id="sm" class="pop" hidden>
+  <div id="modeseg" role="group" aria-label="Mode"><button data-a="mlearn" title="Simple view with hints">🎓 Learn</button><button data-a="mpro" title="Cable sizes, voltage drop and trip curves">⚙ Pro</button></div>
   <label class="row">Display <select id="gm" title="Display mode for all components"><option value="real">Realistic</option><option value="sch">Schematic</option><option value="hyb">Hybrid</option></select></label>
+  <button data-a="lessons">🎓 Lessons &amp; examples</button>
+  <button data-a="check">✔ Check circuit</button>
+  <button data-a="bom">📋 Bill of materials</button>
   <button id="bg" data-a="grid" title="Toggle grid">▦ Grid</button>
   <button data-a="theme">◐ Light / dark</button>
   <button data-a="dup" title="Duplicate the selected component">⧉ Copy selected</button>
   <button data-p="right">📊 Meters &amp; solar</button>
   <button data-a="load">⤒ Import circuit</button>
+  <button data-a="fb">💬 Send feedback</button>
   <button data-a="clear">✕ Clear all</button>
  </div>
  <div id="legacy" hidden>
@@ -210,18 +239,20 @@ body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var
   <select id="ex" title="Learning examples"><option value="">Examples…</option><option value="stair">Staircase 2-way light</option><option value="hall">Hallway intermediate</option><option value="kitchen">Kitchen RCD + socket</option><option value="garage">Relay-controlled motor</option></select>
  </div>
 </header>
-<div id="ctx"></div>
+<div id="ctx"></div><div id="tip" hidden></div>
 <main>
  <aside id="left" class="panel"><div id="phead"><h3>Components</h3><input id="ps" type="search" placeholder="Search components…" autocomplete="off" aria-label="Search components"><div id="ptools"><button id="pm" data-pa="multi" title="Pick several components, then add them all at once">☐ Select several</button><span class="pt">or drag one onto the canvas</span></div><div id="padd" hidden><button id="paddgo" data-pa="add">Add <b id="pcount">0</b> selected</button><button data-pa="clr">Clear</button></div></div><div id="pnone" hidden>No components match your search.</div><div id="pal"></div></aside>
- <div id="cv"><svg id="svg"><g id="vp"></g></svg><div id="pbar" hidden></div><div id="fw" aria-label="Wire type"><button class="wk" id="fwL" data-a="wL" style="background:#dc2626" title="Live wire">L</button><button class="wk" id="fwN" data-a="wN" style="background:#2563eb" title="Neutral wire">N</button><button class="wk" id="fwE" data-a="wE" style="background:#16a34a" title="Earth wire">E</button><button class="wk" id="fwP" data-a="wP" style="background:#ea580c" title="DC + wire">+</button><button class="wk" id="fwM" data-a="wM" style="background:#111827" title="DC − wire">−</button></div><div id="fl"><button id="ftog" data-a="ftog" title="Hide / show tools">⌃</button><div id="ftools"><button id="bu" data-a="undo" title="Undo">↶</button><button id="br" data-a="redo" title="Redo">↷</button><button id="bro" data-a="rot" title="Rotate selected">⟳</button><button id="bd" data-a="del" title="Delete selected">🗑</button><button data-a="zout" title="Zoom out">−</button><button data-a="zin" title="Zoom in">+</button><button data-a="fit" title="Fit circuit to screen">⤢</button><button id="bm" data-a="move" title="Lock / unlock moving parts">🔓</button><button id="bset" data-a="smenu" title="Settings">⚙</button></div></div><div id="sys"></div></div>
+ <div id="cv"><svg id="svg"><g id="vp"></g></svg><div id="pbar" hidden></div><div id="fw" aria-label="Wire type"><button class="wk" id="fwL" data-a="wL" style="background:#dc2626" title="Live wire">L</button><button class="wk" id="fwN" data-a="wN" style="background:#2563eb" title="Neutral wire">N</button><button class="wk" id="fwE" data-a="wE" style="background:#16a34a" title="Earth wire">E</button><button class="wk" id="fwP" data-a="wP" style="background:#ea580c" title="DC + wire">+</button><button class="wk" id="fwM" data-a="wM" style="background:#111827" title="DC − wire">−</button></div><div id="fl"><button id="ftog" data-a="ftog" title="Hide / show tools">⌃</button><div id="ftools"><button id="bu" data-a="undo" title="Undo">↶</button><button id="br" data-a="redo" title="Redo">↷</button><button id="bro" data-a="rot" title="Rotate selected">⟳</button><button id="bsel" data-a="selmode" title="Select several parts (or hold Shift)">⬚</button><button id="bd" data-a="del" title="Delete selected">🗑</button><button data-a="zout" title="Zoom out">−</button><button data-a="zin" title="Zoom in">+</button><button data-a="fit" title="Fit circuit to screen">⤢</button><button id="bm" data-a="move" title="Lock / unlock moving parts">🔓</button><button id="bset" data-a="smenu" title="Settings">⚙</button></div></div><div id="sys"></div><div id="lsn" hidden></div></div>
  <aside id="right" class="panel">
   <h3>Instruments</h3>
   <div class="mt"><small>Supply</small><select id="sup"><option value="230">230 V / 50 Hz</option><option value="120">120 V / 60 Hz</option></select></div>
   <div class="mt"><small>AC Voltmeter</small><span class="v" id="iv">0.0</span> V</div>
-  <div class="mt"><small>Ammeter</small><span class="v" id="ii">0.00</span> A</div>
+  <div class="mt"><small>Ammeter</small><span class="v" id="ii">0.00</span> A<small id="iph"></small></div>
   <div class="mt"><small>Wattmeter</small><span class="v" id="ip">0</span> W<small id="ie">0.00 Wh</small></div>
   <div class="mt"><small>Solar &amp; battery</small>Sun <input id="sun" type="range" min="0" max="100" value="80" style="width:100%"><br>PV <b id="spv">0</b> W · DC load <b id="sdc">0</b> W<br>Battery <b id="ssoc">–</b><br>Time speed <select id="spd"><option value="1">1×</option><option value="60" selected>60×</option><option value="600">600×</option></select></div><div class="mt"><small>Oscilloscope (V yellow, I cyan)</small><canvas id="scope" width="440" height="200"></canvas></div>
-  <div class="mt"><small>Multimeter</small><div id="mm">–</div></div><h3>Event log</h3><div id="log"></div>
+  <div class="mt"><small>Multimeter</small><div id="mm">–</div></div><div class="mt" id="pro" hidden><small>Pro analysis</small><div id="prot" style="font-size:13px">Press Run to see cable currents and voltage drop.</div>
+   <label style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:8px;font-size:12px">Cables <select id="pcab" style="max-width:130px"><option value="">Set all to…</option><option>1</option><option>1.5</option><option>2.5</option><option>4</option><option>6</option><option>10</option><option>16</option><option>25</option></select></label>
+   <label style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:6px;font-size:12px">Scale <select id="psc" style="max-width:130px"><option value="0.5">1 square = 0.5 m</option><option value="1" selected>1 square = 1 m</option><option value="2">1 square = 2 m</option><option value="5">1 square = 5 m</option></select></label></div><h3>Event log</h3><div id="log"></div>
  </aside>
 </main>
 <dialog id="fd"><h3 style="margin:0 0 8px">💬 Send feedback <small id="fv" style="color:var(--mut);font-weight:400"></small></h3>
@@ -444,9 +475,12 @@ function calc(mark){
  const TRN={tup:1,tdn:1},tn=(c,k)=>c.id+':'+(TRN[c.type]?'S'+k:k);
  const ss=[],src=comps.find(c=>c.type=='src');if(src)ss.push(src);
  comps.forEach(c=>{if(c.type=='inv'&&c.s.on&&!c.s.fault&&bs[bk(c,'P','M')])ss.push(c);if(c.type=='gen'&&c.s.on&&!c.s.fault)ss.push(c)});
- const over=[];let acP=0;
+ const over=[],PL=[];let acP=0;
  const mkO=(c,V)=>{const o={c,V,nL:f(tn(c,'L')),nN:f(tn(c,'N')),nE:f(tn(c,'E')),P:0};o.short=o.nL==o.nN;o.ef=o.nL==o.nE;return o};
  const out=ss.map(c=>mkO(c,SUP.v));
+ const s3=comps.find(c=>c.type=='src3');
+ if(s3){const m3=(a,b,V,ll)=>{const o={c:s3,V,nL:f(s3.id+':'+a),nN:f(s3.id+':'+b),nE:f(s3.id+':E'),P:0,ph:ll?0:1,ll};o.short=o.nL==o.nN;o.ef=!ll&&o.nL==o.nE;return o};
+  ['L1','L2','L3'].forEach(a=>out.push(m3(a,'N',SUP.v,0)));[['L1','L2'],['L2','L3'],['L3','L1']].forEach(([a,b])=>out.push(m3(a,b,PV3(),1)))}
  for(let pass=0;pass<4;pass++)comps.forEach(t=>{if(!TRN[t.type]||t.s.fault||out.some(o=>o.c==t))return;const pl=f(t.id+':PL'),pn=f(t.id+':PN'),fd=out.find(o=>!o.short&&((o.nL==pl&&o.nN==pn)||(o.nL==pn&&o.nN==pl)));
   if(fd){const o=mkO(t,fd.V*(t.type=='tup'?t.s.ratio:1/t.s.ratio));o.feed=fd;o.tr=1;out.push(o)}});
  out.forEach(o=>{if(o.short)return;const lo=(d,a,b)=>{const x=f(d.id+':'+a),y=f(d.id+':'+b);return(x==o.nL&&y==o.nN)||(x==o.nN&&y==o.nL)},fv=o.V/SUP.v;
@@ -454,27 +488,31 @@ function calc(mark){
     if(fv>1.4){p=0;if(mark){d.s.dead=1;log('⚠ '+TY[d.type].n+' burned out – '+Math.round(o.V)+' V on a '+SUP.v+' V load')}}
     else if(fv<.4){p=0;if(mark)d.low=1}else if(fv<.9&&mark)d.low=1}
    if(d.type=='sock'&&lo(d,'L','N')){if(mark)d.hot=1;if(d.s.plug)p=(fv>1.4||fv<.4)?0:1200}
-   if(p){o.P+=p;if(mark&&LOADS[d.type])d.lit=1}})});
+   if(p){o.P+=p;PL.push([d.id,p,o.V,0]);if(mark&&LOADS[d.type])d.lit=1}})});
+ if(s3){const ph=out.filter(o=>o.ph),pn=ph.map(o=>o.nL);
+  comps.forEach(d=>{if(d.type!='motor3'||d.s.dead)return;const n=['U','V','W'].map(k=>f(d.id+':'+k)),ok=n.every(x=>pn.includes(x))&&new Set(n).size==3&&!ph.some(o=>o.short);
+   if(ok){ph.forEach(o=>o.P+=LOADS.motor3/3);PL.push([d.id,LOADS.motor3,PV3(),1]);if(mark)d.lit=1}
+   else if(mark&&new Set(n.filter(x=>pn.includes(x))).size>0)d.low=1})}
  for(let i=out.length-1;i>=0;i--){const o=out[i];if(o.tr&&!o.short)o.feed.P+=o.P/.95+5}
  out.forEach(o=>{const c=o.c;if(!o.tr)acP+=o.P;if(c.type=='inv'){bs[bk(c,'P','M')].dem+=o.P/.92+12;if(o.P>1000)over.push(c)}if(c.type=='gen'&&o.P>3000)over.push(c);if(o.tr&&o.P>1000)over.push(c)});
- comps.forEach(c=>{if(DCL[c.type]&&!c.s.dead){const b=fb(c,'A','B');if(b){b.dem+=DCL[c.type];b.ld.push(c)}}});
+ comps.forEach(c=>{if(DCL[c.type]&&!c.s.dead){const b=fb(c,'A','B');if(b){b.dem+=DCL[c.type];b.ld.push(c);PL.push([c.id,DCL[c.type],12,0,1])}}});
  let dcP=0;const dcn=new Set();
  Object.entries(bs).forEach(([k,b])=>{k.split('|').forEach(n=>dcn.add(n));const bad=b.dem>av(b);b.bad=bad;dcP+=b.dem;
   if(bad)out.forEach(o=>{if(o.c.type=='inv'&&bs[bk(o.c,'P','M')]==b)over.push(o.c)});
   const net=b.sup-b.dem;
   if(mark){b.ld.forEach(c=>{if(!bad)c.lit=1});b.b.forEach(c=>{c.flow=net>0?(c.s.soc<100?net/b.b.length:0):(c.s.soc>3?net/b.b.length:0)})}});
- return{f,out,over,bs,acP,dcP,dcn}}
+ return{f,out,over,bs,acP,dcP,dcn,pl:PL}}
 const OP={mcb:'on',rcbo:'on',fuse:'blown',cb:'on'};
 function ovl(){for(let k=0;k<6;k++){const r0=calc(0);let w=null;
  comps.forEach(c=>{const key=OP[c.type];if(!key||!c.s.rate)return;if(key=='blown'?c.s.blown:!c.s.on)return;
   const dc=r0.dcn.has(r0.f(c.id+':'+((c.type=='rcbo'||c.type=='cb')?'LI':'A'))),sv=c.s[key];c.s[key]=key=='blown'?1:0;const r1=calc(0);c.s[key]=sv;
-  const i=dc?(r0.dcP-r1.dcP)/12:(r0.acP-r1.acP)/SUP.v;if(i>c.s.rate*1.1&&(!w||c.s.rate<w.s.rate))w=c});
- let wd=null;if(!w)comps.forEach(c=>{if(wd||c.type!='db')return;[0,1].forEach(i=>{if(wd||!c.s.b[i])return;c.s.b[i]=0;let r1;try{r1=calc(0)}finally{c.s.b[i]=1}const a=(r0.acP-r1.acP)/SUP.v;if(a>(c.s.rate||32)*1.1)wd=[c,i]})});
+  const i=dc?(r0.dcP-r1.dcP)/12:IL(r0,r1);if(i>c.s.rate*OVX(c)&&(!w||c.s.rate<w.s.rate))w=c});
+ let wd=null;if(!w)comps.forEach(c=>{if(wd||c.type!='db')return;[0,1].forEach(i=>{if(wd||!c.s.b[i])return;c.s.b[i]=0;let r1;try{r1=calc(0)}finally{c.s.b[i]=1}const a=IL(r0,r1);if(a>(c.s.rate||32)*OVX(c))wd=[c,i]})});
   if(wd){wd[0].s.b[wd[1]]=0;log('⚠ Overload on '+(wd[0].s.rate||32)+' A breaker L'+(wd[1]+1)+' of '+TY.db.n+' – tripped');continue}
   let wm=null;if(!w)comps.forEach(c=>{const m=MP[c.type];if(wm||!m||!c.s.rate)return;
-   if(m.kind=='br'){if(!c.s.on)return;c.s.on=0;let r1;try{r1=calc(0)}finally{c.s.on=1}if((r0.acP-r1.acP)/SUP.v>c.s.rate*1.1)wm=[c,'on']}
-   else if(m.kind=='fu'){for(let i=0;i<m.n&&!wm;i++){if(c.s.bl[i])continue;c.s.bl[i]=1;let r1;try{r1=calc(0)}finally{c.s.bl[i]=0}if((r0.acP-r1.acP)/SUP.v>c.s.rate*1.1)wm=[c,i]}}
-   else if(m.kind=='ov'){if(c.s.tr)return;c.s.__o=1;let r1;try{r1=calc(0)}finally{c.s.__o=0}if((r0.acP-r1.acP)/SUP.v>c.s.rate*1.1)wm=[c,'tr']}});
+   if(m.kind=='br'){if(!c.s.on)return;c.s.on=0;let r1;try{r1=calc(0)}finally{c.s.on=1}if(IL(r0,r1)>c.s.rate*OVX(c))wm=[c,'on']}
+   else if(m.kind=='fu'){for(let i=0;i<m.n&&!wm;i++){if(c.s.bl[i])continue;c.s.bl[i]=1;let r1;try{r1=calc(0)}finally{c.s.bl[i]=0}if(IL(r0,r1)>c.s.rate*OVX(c))wm=[c,i]}}
+   else if(m.kind=='ov'){if(c.s.tr)return;c.s.__o=1;let r1;try{r1=calc(0)}finally{c.s.__o=0}if(IL(r0,r1)>c.s.rate*OVX(c))wm=[c,'tr']}});
   if(wm){const[c,k]=wm;if(k=='on')c.s.on=0;else if(k=='tr')c.s.tr=1;else c.s.bl[k]=1;log('⚠ Overload on '+c.s.rate+' A '+TY[c.type].n+' – '+(k=='tr'?'tripped (contacts changed over)':'operated'));continue}
   if(!w)break;w.s[OP[w.type]]=OP[w.type]=='blown'?1:0;log('⚠ Overload on '+w.s.rate+' A '+TY[w.type].n+' – operated')}}
 Object.assign(KC,{'+':'#ea580c','-':'#111827'});Object.assign(WC,{P:'#ea580c',M:'#111827'});
@@ -503,6 +541,17 @@ dcd('dclamp','lamp','DC Lamp 12 V');dcd('dcfan','fan','DC Fan');dcd('dcpump','pu
 TY.usb={...TY.lamp,n:'USB Charger / Phone',lx:22,t:{A:[-40,0,'+'],B:[40,0,'-']},sch:AS('USB'),real:c=>`<rect x="-22" y="-14" width="30" height="28" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/><rect x="8" y="-5" width="12" height="10" fill="#94a3b8"/><rect x="22" y="-16" width="14" height="32" rx="3" fill="#111827"/><rect x="24" y="-13" width="10" height="26" fill="${c.lit?'#38bdf8':'#374151'}"/>`};
 TY.dciso={...TY.iso,n:'DC Isolator',t:{PI:[-40,-20,'+'],MI:[-40,20,'-'],PO:[40,-20,'+'],MO:[40,20,'-']}};ACTS.dciso=ACTS.iso;
 Object.keys(DCL).forEach(t=>{ACTS[t]=c=>[[c.s.dead?'Repair':'Break (open circuit)',c=>c.s.dead^=1]];NOCLICK[t]=1});
+/* ---------- v10: 3-phase parts + note ---------- */
+const PV3=()=>SUP.v==230?400:208;
+TY.src3={n:'3-Phase Source',w:80,h:100,lx:28,s:{},t:{L1:[40,-40,'L'],L2:[40,-20,'L'],L3:[40,0,'L'],N:[40,20,'N'],E:[40,40,'E']},
+ sch:c=>`<rect class="s" x="-28" y="-46" width="56" height="92" rx="4"/>`+P('M28 -40H40M28 -20H40M28 0H40M28 20H40M28 40H40')+`<text class="lb" x="-6" y="-4" style="font-size:16px">3~</text><text class="lb" x="-6" y="14" style="font-size:9px">${SUP.v}/${PV3()} V</text>`+['L1','L2','L3','N','E'].map((n,i)=>`<text class="lb" x="19" y="${-37+i*20}" style="font-size:8px">${n}</text>`).join(''),
+ real:c=>`<rect x="-28" y="-46" width="56" height="92" rx="6" fill="#1e3a5f"/><rect x="-23" y="-40" width="36" height="34" rx="3" fill="#0b1220"/><path d="M-19 -22q3-9 6 0t6 0t6 0t6 0t6 0" stroke="#4ade80" fill="none" stroke-width="2"/><text class="lt" x="-5" y="16" style="font-size:9px">3~ ${PV3()}V</text><text class="lt" x="-5" y="30" style="font-size:8px">${SUP.f}Hz</text>`+['L1','L2','L3','N','E'].map((n,i)=>`<text class="lt" x="20" y="${-37+i*20}" style="font-size:7px">${n}</text>`).join('')};
+TY.motor3={n:'3-Phase Motor',w:80,h:60,lx:22,s:{dead:0},t:{U:[-40,-20,'L'],V:[-40,0,'L'],W:[-40,20,'L'],E:[40,0,'E']},
+ sch:c=>P('M-40 -20H-19M-40 0H-22M-40 20H-19M22 0H40')+`<circle class="s" r="22" style="fill:${c.lit?'#bbf7d0':'none'}"/><text class="lb" y="-1" style="font-size:13px">M</text><text class="lb" y="11" style="font-size:9px">3~</text>`,
+ real:c=>`<circle r="22" fill="#475569" stroke="#1e293b" stroke-width="2"/><g class="${c.lit?'spin':''}"><path d="M-13 0H13M0 -13V13M-9 -9L9 9M-9 9L9 -9" stroke="#e5e7eb" stroke-width="2.5"/></g><circle r="4" fill="#111"/><text class="lt" x="-30" y="-17" style="font-size:7px">U</text><text class="lt" x="-30" y="3" style="font-size:7px">V</text><text class="lt" x="-30" y="23" style="font-size:7px">W</text>`};
+LOADS.motor3=3000;ACTS.motor3=c=>[[c.s.dead?'Repair':'Break (open circuit)',c=>c.s.dead^=1]];NOCLICK.motor3=1;
+const noteSVG=c=>`<rect x="-70" y="-14" width="140" height="28" rx="6" fill="#fef9c3" stroke="#eab308" stroke-width="1.5"/><text class="lb" y="4" style="font-size:12px;fill:#713f12">${String(c.label||'Note').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}</text>`;
+TY.note={n:'Note',w:140,h:28,lx:0,s:{},t:{},sch:noteSVG,real:noteSVG};ACTS.note=c=>[];
 let lastB=0;
 function batt(dt,t){if(!running)return;let ch=0;comps.forEach(c=>{if(c.type=='batt'&&c.flow){const s0=c.s.soc,n=Math.max(0,Math.min(100,s0+c.flow*dt*SPEED/3600/CAP*100));if((s0>3)!=(n>3)||(s0<100)!=(n<100))ch=1;c.s.soc=n}});if(ch)after();else if(t-lastB>1000&&comps.some(c=>c.type=='batt')){lastB=t;sim();render()}}
 function showD(h,txt,edit,cb){$('#dh').textContent=h;const t=$('#dt');t.value=txt;t.readOnly=!edit;dcb=cb;$('#dok').style.display=cb?'':'none';$('#dl').showModal()}
@@ -519,13 +568,16 @@ Object.entries(GANG).forEach(([k,n])=>{const sp=n==2?40:n==3?30:24,ys=[...Array(
   sch:c=>{const g=gg(c);return P('M-40 0H-14')+ys.map((y,i)=>P(`M14 ${y}H40M-14 0L${g[i]?'14 '+y:'12 '+(y*.6-6)}`)+dot(14,y)).join('')+dot(-14,0)},
   real:c=>{const g=gg(c);return `<rect x="${-pw/2}" y="${-H/2+4}" width="${pw}" height="${H-8}" rx="6" fill="#f8f7f2" stroke="#9ca3af" stroke-width="2"/>`+ys.map((_,i)=>{const x=-pw/2+4+i*rw,y=-H/2+10,h=H-20;return `<rect x="${x}" y="${y}" width="${rw-2}" height="${h}" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="${x}" y="${g[i]?y:y+h/2}" width="${rw-2}" height="${h/2}" rx="3" fill="#6b7280" opacity=".55"/>`}).join('')}};
  ACTS[k]=c=>gg(c).map((v,i)=>['Gang '+(i+1)+' '+(v?'OFF':'ON'),c=>{gg(c)[i]^=1}]);NOCLICK[k]=1});
-const APP_VERSION='v9',FB_URL='';
+const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='';
 function openFB(){$('#fv').textContent=APP_VERSION;$('#fd').showModal()}
 async function sendFB(){const m=$('#fm').value.trim(),S=t=>{$('#fs').textContent=t};if(!m){S('Please write your feedback first.');return}
  const o={name:$('#fn').value,contact:$('#fc').value,type:$('#ft').value,part:$('#fa').value,rating:$('#fr').value,message:m,version:APP_VERSION,screen:innerWidth+'x'+innerHeight,device:navigator.userAgent,time:new Date().toISOString()};
  if($('#fk').checked){try{o.circuit=snapS()}catch(e){}}
  if(FB_URL){try{const r=await fetch(FB_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(o)});if(!r.ok)throw 0;S('✔ Thank you! Your feedback was sent.');$('#fm').value='';setTimeout(()=>$('#fd').close(),1600)}catch(e){S('Could not send (check your internet). Your text is kept – try again.')}return}
  const t='ElecSim feedback '+APP_VERSION+'\nName: '+o.name+'\nContact: '+o.contact+'\nType: '+o.type+'\nPart: '+o.part+'\nRating: '+o.rating+'/5\n\n'+m+'\n\nDevice: '+o.screen+' '+o.device+(o.circuit?'\n\nCircuit: '+o.circuit:'');
+ const t2=t.split('\n\nCircuit: ')[0]+(o.circuit?'\n\n(Circuit not included in this link – use Save to send it.)':'');
+ if(FB_EMAIL){S('Opening your email app…');location.href='mailto:'+FB_EMAIL+'?subject='+encodeURIComponent('ElecSim feedback '+APP_VERSION)+'&body='+encodeURIComponent(t2);return}
+ if(FB_WA){S('Opening WhatsApp…');window.open('https://wa.me/'+String(FB_WA).replace(/\D/g,'')+'?text='+encodeURIComponent(t2),'_blank');return}
  try{if(navigator.share){await navigator.share({title:'ElecSim feedback',text:t});return}}catch(e){return}
  try{await navigator.clipboard.writeText(t);S('Copied! Paste it into a message to the developer.')}catch(e){S('Could not send. Ask the developer to set up the feedback link.')}}
 function fit(){const r=$('#svg').getBoundingClientRect();if(!comps.length||!r.width){view={x:30,y:30,z:1};applyView();return}let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;comps.forEach(c=>{const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC/2+15,q=(o?T.w:T.h)*SC/2+35;x0=Math.min(x0,c.x-w);x1=Math.max(x1,c.x+w);y0=Math.min(y0,c.y-q);y1=Math.max(y1,c.y+q)});const z=Math.min(1,Math.max(.3,Math.min(r.width/(x1-x0),r.height/(y1-y0))*.95));view.z=z;view.x=r.width/2-z*(x0+x1)/2;view.y=r.height/2-z*(y0+y1)/2;applyView()}
@@ -535,7 +587,7 @@ function sim(){
  let r;
  for(let i=0;i<10;i++){r=calc(0);let ch=0;
   r.out.forEach(o=>{if(ch)return;
-   if(o.short)ch=trip(r.f,o.nL,0,'Short circuit L–N');
+   if(o.short)ch=trip(r.f,o.nL,0,o.ll?'Short circuit between phases':'Short circuit L–N');
    else if(o.ef)ch=trip(r.f,o.nL,1,'Earth fault L–E');
    else if(comps.some(c=>LOADS[c.type]&&c.s.leak&&!c.s.dead&&(r.f(c.id+':A')==o.nL||r.f(c.id+':B')==o.nL))){const rc=comps.filter(c=>(c.type=='rcd'||c.type=='rcbo')&&c.s.on&&r.f(c.id+':LI')==o.nL);rc.forEach(c=>c.s.on=0);ch=rc.length;if(ch)log('⚠ Earth leakage – RCD tripped')}});
   if(!ch&&r.over.length){r.over.forEach(c=>{c.s.fault=1});log('⚠ '+[...new Set(r.over.map(c=>TY[c.type].n))].join(', ')+' overloaded – shut down');ch=1}
@@ -543,7 +595,7 @@ function sim(){
   if(!ch){const t=JSON.stringify(comps.map(c=>c.s));ovl();if(JSON.stringify(comps.map(c=>c.s))!=t)ch=1}
   if(!ch)break}
  r=calc(1);const sh=r.out.some(o=>o.short);
- R.V=r.out.length?r.out[0].V:0;R.P=r.acP;R.short=sh;R.I=sh?500:r.out.reduce((a,o)=>a+(o.tr?0:o.P/o.V),0);R.dc=r.dcP;
+ R.V=r.out.length?r.out[0].V:0;R.P=r.acP;R.short=sh;R.I=sh?500:r.out.reduce((a,o)=>a+(o.tr?0:o.P/o.V),0);R.dc=r.dcP;R.ph=r.out.filter(o=>o.ph).map(o=>o.P/o.V);
  R.pv=SUN*PVW/100*comps.filter(c=>c.type=='pv'&&!c.s.dead).length;
  const bt=comps.find(c=>c.type=='batt');R.soc=bt?bt.s.soc:null;R.flow=comps.reduce((a,c)=>a+(c.flow||0),0);
  comps.forEach(c=>{if(['inv','gen','tup','tdn'].includes(c.type)&&r.out.some(o=>o.c==c))c.lit=1});comps.forEach(c=>{if(c.type=='mm')c.rd=mmRead(c,r)});
@@ -571,7 +623,7 @@ function drawC(c){const T=TY[c.type],m=c.mode||gmode,odd=c.rot%2,eh=odd?T.w:T.h;
   if(m=='sch')return `<circle cx="${x}" cy="${y}" r="${w?5:4}" fill="${w||KC[k]}" stroke="${w?'#fff':'#111'}" stroke-width="${w?1.6:1}" pointer-events="none"/>`+hit;
   const ring=w||(k?KC[k]:'');
   return `<g pointer-events="none"><circle cx="${x}" cy="${y}" r="8.6" fill="url(#tcu)" stroke="#7c2d12" stroke-width="1"/>${ring?`<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${ring}" stroke-width="2.6"/>`:''}<circle cx="${x}" cy="${y}" r="3.9" fill="#2a1a0e" stroke="#e7a25b" stroke-width=".8"/><path d="M${x-2.8} ${y+.8}L${x+2.8} ${y-.8}" stroke="#9ca3af" stroke-width="1.1"/></g>`+hit}).join('')+'</g>';
- h+=`<text class="lb" x="${c.x}" y="${c.y+eh*SC/2+14}">${T.n}${c.s.rate?' '+c.s.rate+'A':''}${c.s.dead?' ✖':''}${c.s.leak?' ⚡':''}${c.low?' ↓V':''}</text>`;
+ h+=`<text class="lb" x="${c.x}" y="${c.y+eh*SC/2+14}">${c.type=='note'?'':T.n}${c.s.rate?' '+c.s.rate+'A':''}${c.s.dead?' ✖':''}${c.s.leak?' ⚡':''}${c.low?' ↓V':''}</text>`;
  if(m=='hyb'){const bh=.6*(T.h+10);h+=`<g transform="translate(${c.x} ${c.y-eh*SC/2-bh/2-3}) scale(.6)" pointer-events="none" style="color:#111"><rect x="-50" y="${-(T.h+10)/2}" width="100" height="${T.h+10}" rx="8" fill="#fff" stroke="#9ca3af" stroke-width="2"/>${T.sch(c)}</g>`}
  return h+'</g>'}
 const tax=(T,x,y)=>Math.abs(x)/(T.w/2)>=Math.abs(y)/(T.h/2)?'h':'v';
@@ -613,7 +665,7 @@ function ui(){
  else x.innerHTML='<span class="hint" style="color:var(--mut)">Tap a component to add it, or drag it onto the canvas · drag from a terminal dot to wire · tap switches to toggle · press ▶ Play</span>'}
 function after(){sim();render();ui();mkUI();pal(false);try{localStorage.setItem('hes',snapS())}catch(e){}}
 function pal(full=true){const P=$('#pal');
- if(full||!P.children.length){const G=[['Sources',['src','gen']],['Transformers',['tup','tdn']],['Instruments',['mm']],['Loads',['lamp','led','tube','fan','motor','heater','bell']],['Appliances',['ac','fridge','tv','washer','microwave','kettle','iron','pump','pc','oven','iphone']],['Switches',['sw1','sw2','sw2g','sw3g','sw4g','swi','pb','timer','relay']],['Sockets',['sock']],['Protection',['iso','mcb','mcb2','mcb3','mcb4','mcbk1','mcbk2','cb','mccb','mpcb','rcd','rcd2','rcd3','rcd4','rcbo','fuse','fuse2','fuse3','fuse4','disc3','disc4','ovl','ovl2']],['Distribution',['db','jb','meter','nbar','ebar']],['DC & Solar',['pv','batt','dcsrc','mppt','inv','dciso','dclamp','dcfan','usb','dcpump','dcfridge']]];
+ if(full||!P.children.length){const G=[['Sources',['src','src3','gen']],['Transformers',['tup','tdn']],['Instruments',['mm']],['Loads',['lamp','led','tube','fan','motor','motor3','heater','bell']],['Appliances',['ac','fridge','tv','washer','microwave','kettle','iron','pump','pc','oven','iphone']],['Switches',['sw1','sw2','sw2g','sw3g','sw4g','swi','pb','timer','relay']],['Sockets',['sock']],['Protection',['iso','mcb','mcb2','mcb3','mcb4','mcbk1','mcbk2','cb','mccb','mpcb','rcd','rcd2','rcd3','rcd4','rcbo','fuse','fuse2','fuse3','fuse4','disc3','disc4','ovl','ovl2']],['Distribution',['db','jb','meter','nbar','ebar']],['DC & Solar',['pv','batt','dcsrc','mppt','inv','dciso','dclamp','dcfan','usb','dcpump','dcfridge']],['Annotations',['note']]];
   P.innerHTML=G.map(([g,l])=>`<h3 style="grid-column:1/-1">${g}</h3>`+l.map(t=>`<button class="pi" data-g="${g}" data-ty="${t}" title="${TY[t].n}"><svg viewBox="-54 -54 108 108" data-ic="${t}"></svg>${TY[t].n}</button>`).join('')).join('')+`<h3 style="grid-column:1/-1">Wires</h3>`+[['L','Live','#c0392b'],['N','Neutral','#2563eb'],['E','Earth','#16a34a']].map(([k,n,col])=>`<button class="pi" data-g="Wires" data-wk="${k}"><svg viewBox="-54 -20 108 40"><path d="M-44 0H44" stroke="${col}" stroke-width="6"/>${k=='E'?'<path d="M-44 0H44" stroke="#facc15" stroke-width="6" stroke-dasharray="8 8"/>':''}</svg>${n}</button>`).join('');palFilter();palMark()}
  P.querySelectorAll('[data-ic]').forEach(s=>{const t=s.dataset.ic,c={type:t,s:clone(TY[t].s),rot:0};s.innerHTML=(gmode!='sch'&&ART[t])?`<g transform="scale(${ART[t].z})">${artOf(c)}</g>`:body(c,gmode=='sch'?'sch':'real');
   if(gmode!='sch'&&!PH[t]&&!ART[t]){const im=new Image();im.onload=()=>{if(s.isConnected&&gmode!='sch'&&!PH[t]&&!ART[t])s.innerHTML=`<image href="icons/${t}.svg" x="-54" y="-54" width="108" height="108"/>`};im.src='icons/'+t+'.svg'}})}
@@ -688,20 +740,20 @@ function tpath(a,b){const adj={},add=(x,y,e)=>{(adj[x]=adj[x]||[]).push([y,e]);(
  const prev={[a]:null},qu=[a];
  while(qu.length){const x=qu.shift();if(x==b)break;(adj[x]||[]).forEach(([y,e])=>{if(!(y in prev)){prev[y]=[x,e];qu.push(y)}})}
  const out=[];if(!(b in prev))return out;let x=b;while(prev[x]){out.push(prev[x][1]);x=prev[x][0]}return out}
-function analyze(){const s=comps.find(c=>['src','inv','gen'].includes(c.type));if(!s)return null;
- const o=[],f=build(),nL=f(s.id+':L'),nN=f(s.id+':N'),nE=f(s.id+':E'),has=t=>comps.some(c=>t.includes(c.type)),C=id=>({k:'c',id}),T=id=>({k:'t',id}),
+function analyze(){const s=comps.find(c=>['src','src3','inv','gen'].includes(c.type));if(!s)return null;
+ const LK=s.type=='src3'?'L1':'L',o=[],f=build(),nL=f(s.id+':'+LK),nN=f(s.id+':N'),nE=f(s.id+':E'),has=t=>comps.some(c=>t.includes(c.type)),C=id=>({k:'c',id}),T=id=>({k:'t',id}),
   add=(sev,msg,fix,tg)=>{let x=o.find(i=>i.msg==msg);if(!x)o.push(x={sev,msg,fix,tg:[]});tg.forEach(t=>{if(!x.tg.some(u=>u.k==t.k&&u.id==t.id))x.tg.push(t)})},
   path=(a,b)=>{const p=tpath(s.id+':'+a,s.id+':'+b);return p.length?p:[T(s.id+':'+a),T(s.id+':'+b)]};
- if(nL==nN)add('err','Live and neutral are connected together (short circuit).','Remove or re-route one of the marked wires so live never reaches neutral directly. Live may only get back to neutral through a load (lamp, appliance, or a socket with a plug).',path('L','N'));
- if(nL==nE)add('err','Live is connected to earth.','Remove or re-route one of the marked wires so live is not joined to earth. Earth wires (green/yellow) must only go to earth terminals, never to a live wire or a switch.',path('L','E'));
+ if(nL==nN)add('err','Live and neutral are connected together (short circuit).','Remove or re-route one of the marked wires so live never reaches neutral directly. Live may only get back to neutral through a load (lamp, appliance, or a socket with a plug).',path(LK,'N'));
+ if(nL==nE)add('err','Live is connected to earth.','Remove or re-route one of the marked wires so live is not joined to earth. Earth wires (green/yellow) must only go to earth terminals, never to a live wire or a switch.',path(LK,'E'));
  const wd=new Set();wires.forEach(w=>{wd.add(w.a);wd.add(w.b)});
- comps.forEach(c=>{if(c.type=='src'||c.type=='gen')return;const un=Object.keys(TY[c.type].t).filter(n=>!wd.has(c.id+':'+n)&&!(TRN2[c.type]&&(n=='PE'||n=='SE')));
+ comps.forEach(c=>{if(c.type=='src'||c.type=='src3'||c.type=='gen')return;const un=Object.keys(TY[c.type].t).filter(n=>!wd.has(c.id+':'+n)&&!(TRN2[c.type]&&(n=='PE'||n=='SE')));
   if(un.length&&!['nbar','ebar','jb','db'].includes(c.type))add('warn',TY[c.type].n+': unconnected terminal(s) '+un.join(', ')+'.','Draw a wire from each marked terminal to where it belongs (live side, neutral side, or DC + / −). If you do not need this part, select it and delete it.',[C(c.id),...un.map(n=>T(c.id+':'+n))]);
   if(c.type=='sock'&&!wd.has(c.id+':E'))add('err','Socket has no earth connection.','Connect a green earth wire from the socket’s E terminal to the source’s E terminal (or to an earth bar).',[C(c.id),T(c.id+':E')]);
   if(['sw1','sw2','swi','pb','timer','sw2g','sw3g','sw4g'].includes(c.type)&&Object.keys(TY[c.type].t).some(n=>f(c.id+':'+n)==nN))add('err',TY[c.type].n+' is on the neutral – switches must break the live.','Move the switch into the live (red) wire, between the source and the load. The neutral wire should go straight from the source to the load.',[C(c.id)])});
  wires.forEach(w=>{const n=f(w.a),e=n==nL?'L':n==nN?'N':n==nE?'E':null;if(e&&w.k!=e)add('warn','A '+WN[e]+' wire is drawn with the '+(WN[w.k]||w.k)+' colour.','Pick the correct wire colour in the toolbar (L red, N blue, E green), draw the wire again, then delete the wrongly coloured one.',[{k:'w',id:w.id}])});
  const ld=comps.some(c=>LOADS[c.type]||DCL[c.type]||c.type=='sock');
- if(ld&&!has(PROT))add('warn','No overcurrent protection (MCB/fuse).','Add an MCB, CB, RCBO or fuse in series with the live wire right after the source: source L → MCB → switches and loads. The mark shows where the live leaves the source.',[T(s.id+':L')]);
+ if(ld&&!has(PROT))add('warn','No overcurrent protection (MCB/fuse).','Add an MCB, CB, RCBO or fuse in series with the live wire right after the source: source L → MCB → switches and loads. The mark shows where the live leaves the source.',[T(s.id+':'+LK)]);
  if(has(['sock'])&&!has(RCDS))add('warn','Sockets should be protected by an RCD.','Add an RCD (or RCBO) after the source that passes both live and neutral: L-in / N-in from the source, L-out / N-out towards the socket.',comps.filter(c=>c.type=='sock').map(c=>C(c.id)));
  if(has(['pv'])&&has(['batt'])&&!has(['mppt']))add('warn','Solar panel feeds the battery without a charge controller.','Place a Charge Controller (MPPT) between them: panel → controller PV side, battery → controller BAT side.',comps.filter(c=>c.type=='pv'||c.type=='batt').map(c=>C(c.id)));
  if(!ld)add('warn','No loads (lamps/appliances/sockets) added.','Add a lamp, appliance or socket and connect it between live and neutral so there is something for the circuit to power.',[C(s.id)]);
@@ -834,5 +886,249 @@ addEventListener('orientationchange',()=>setTimeout(fit,300));
 $('#fl').onclick=$('#fw').onclick=e=>{const b=e.target.closest('[data-a]');if(b)ACT[b.dataset.a]()};try{const t=localStorage.getItem('hth');if(t)document.documentElement.dataset.theme=t}catch(e){}$('#sun').oninput=e=>{SUN=+e.target.value;after()};$('#spd').onchange=e=>{SPEED=+e.target.value};$('#fsend').onclick=sendFB;$('#fcl').onclick=()=>$('#fd').close();$('#dcl').onclick=()=>$('#dl').close();$('#dok').onclick=()=>{try{dcb($('#dt').value)}catch(e){alert('Invalid circuit text')}$('#dl').close()};$('#ex').onchange=e=>{loadEx(e.target.value);e.target.value=''};
 pal();let sv=null;try{sv=localStorage.getItem('hes')}catch(e){}if(sv){try{restore(sv)}catch(e){demo()}}else demo();undo=[];ui();requestAnimationFrame(()=>{fit();requestAnimationFrame(loop)});
 fetch('components/manifest.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).then(j=>{if(j&&typeof j=='object'){PH=j;pal(false);render()}}).catch(()=>{});
+</script><script>
+/* ===== ElecSimulator v10 extension: Learn/Pro, cables, trip curves, labels, export, BOM, multi-select, lessons ===== */
+const XESC=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let PRO=false,msel=new Set(),selMode=false,mdrag=null,HEAT={},PROW={},PROV={},CABM=1,CABDEF=2.5,LES=null;
+try{PRO=localStorage.getItem('hmode')=='pro'}catch(e){}
+const CURVE_MAG={B:5,C:10,D:20},SIZES=[1,1.5,2.5,4,6,10,16,25,35,50],AMP={1:15,1.5:19.5,2.5:27,4:36,6:46,10:63,16:85,25:112,35:138,50:168},RHO=.0225;
+const defCurve=c=>(c.type=='fuse'||(MP[c.type]&&MP[c.type].kind!='br'))?'C':'B';
+const curveOf=c=>c.s.curve||defCurve(c);
+const OVX=c=>PRO?(CURVE_MAG[curveOf(c)]||5):1.1;
+const TCP=[[1.13,10800],[1.45,3600],[2.55,30],[5,5],[10,1],[20,.4],[50,.1]];
+function tripTime(x,cv){const mag=CURVE_MAG[cv]||5;if(x>=mag)return .02;if(x<=1.13)return Infinity;let i=1;while(i<TCP.length-1&&x>TCP[i][0])i++;const[a,ta]=TCP[i-1],[b,tb]=TCP[i],u=(Math.log(x)-Math.log(a))/(Math.log(b)-Math.log(a));return Math.exp(Math.log(ta)+u*(Math.log(tb)-Math.log(ta)))}
+/* current lost when something is switched off (3-phase aware) */
+function IL(r0,r1){const m=new Map(r1.pl.map(p=>[p[0],p[1]]));let ph=0,php=0;r0.pl.forEach(([id,p,V,f])=>{const d=p-(m.get(id)||0);if(d>0&&f){ph+=d/(1.7320508*V);php+=d}});return ph+((r0.acP-r1.acP)-php)/SUP.v}
+/* ---------- protective devices: current & trip action ---------- */
+function devI(){const r0=calc(0),res=[];
+ const I=(off,on,dc)=>{off();let r1;try{r1=calc(0)}finally{on()}return dc?(r0.dcP-r1.dcP)/12:IL(r0,r1)};
+ const add=(id,c,i,rate,trip,tag)=>{if(i>0&&rate)res.push({id,c,i,rate,cv:curveOf(c),trip,name:TY[c.type].n+(tag||'')+' '+rate+' A'})};
+ comps.forEach(c=>{const s=c.s,m=MP[c.type];
+  if(OP[c.type]&&s.rate){const key=OP[c.type];if(key=='blown'?s.blown:!s.on)return;const dc=r0.dcn.has(r0.f(c.id+':'+((c.type=='rcbo'||c.type=='cb')?'LI':'A'))),sv=s[key];
+   add(c.id,c,I(()=>{s[key]=key=='blown'?1:0},()=>{s[key]=sv},dc),s.rate,()=>{s[key]=key=='blown'?1:0})}
+  else if(c.type=='db'){[0,1].forEach(k=>{if(!s.b[k])return;add(c.id+'#'+k,c,I(()=>{s.b[k]=0},()=>{s.b[k]=1}),s.rate||32,()=>{s.b[k]=0},' L'+(k+1))})}
+  else if(m&&s.rate){
+   if(m.kind=='br'){if(!s.on)return;add(c.id,c,I(()=>{s.on=0},()=>{s.on=1}),s.rate,()=>{s.on=0})}
+   else if(m.kind=='fu'){for(let k=0;k<m.n;k++){if(s.bl[k])continue;add(c.id+'#'+k,c,I(()=>{s.bl[k]=1},()=>{s.bl[k]=0}),s.rate,()=>{s.bl[k]=1},' pole '+(k+1))}}
+   else if(m.kind=='ov'){if(s.tr)return;add(c.id,c,I(()=>{s.__o=1},()=>{s.__o=0}),s.rate,()=>{s.tr=1})}}});
+ return res}
+let lastTick=performance.now();
+setInterval(()=>{const now=performance.now(),dt=Math.min(1,(now-lastTick)/1000);lastTick=now;
+ if(!PRO||!running){if(Object.keys(HEAT).length){HEAT={};heatDraw()}return}
+ let list;try{list=devI()}catch(e){return}
+ const ds=dt*SPEED;let ch=0;const seen={};
+ list.forEach(d=>{const x=d.i/d.rate;let h=HEAT[d.id]||0;seen[d.id]=1;
+  if(x>1.13){h+=ds/tripTime(x,d.cv)}else h=Math.max(0,h-ds/900);
+  HEAT[d.id]=h;
+  if(h>=1){d.trip();HEAT[d.id]=0;ch=1;log('⚠ '+d.name+' tripped (thermal, curve '+d.cv+', '+x.toFixed(2)+'× rated current)')}});
+ Object.keys(HEAT).forEach(k=>{if(!seen[k])delete HEAT[k]});
+ if(ch)after();else heatDraw()},250);
+function heatDraw(){const g=$('#heatg');if(!g)return;let h='';Object.entries(HEAT).forEach(([id,v])=>{if(v<.02)return;const c=byId(id.split('#')[0]);if(!c)return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC;h+=`<rect x="${c.x-20}" y="${c.y-eh/2-17}" width="40" height="5" rx="2.5" fill="#e5e7eb" stroke="#9ca3af" stroke-width=".5"/><rect x="${c.x-20}" y="${c.y-eh/2-17}" width="${(40*Math.min(1,v)).toFixed(1)}" height="5" rx="2.5" fill="${v>.7?'#dc2626':'#f59e0b'}"/>`});g.innerHTML=h}
+/* ---------- cables: current, length, voltage drop ---------- */
+function wlen(w){const q=wpts(w,LN[w.id]||0);let L=0;for(let i=1;i<q.length;i++)L+=Math.hypot(q[i][0]-q[i-1][0],q[i][1]-q[i-1][1]);return L/15*CABM}
+const wsz=w=>w.sz||CABDEF;
+function proAnalyze(){PROW={};PROV={};if(!PRO||!running)return;
+ let base;try{base=calc(0)}catch(e){return}
+ const keep=wires,vd={};
+ keep.forEach(w=>{if(w.k=='E')return;let r1=null;wires=keep.filter(x=>x!==w);try{r1=calc(0)}catch(e){}finally{wires=keep}
+  const len=wlen(w),sz=wsz(w),R=RHO*len/sz,lost=[];let I=0;
+  if(r1){const m=new Map(r1.pl.map(p=>[p[0],p[1]]));base.pl.forEach(([id,p,V,f])=>{const d=p-(m.get(id)||0);if(d>0){I+=f?d/(1.7320508*V):d/V;lost.push([id,V,f])}})}
+  const amp=AMP[sz]||27;PROW[w.id]={i:I,len,R,sz,amp,util:I/amp};
+  lost.forEach(([id,V,f])=>{const o=vd[id]||(vd[id]={dv:0,V});o.dv+=I*R*(f?.57735:1)})});
+ Object.entries(vd).forEach(([id,o])=>{PROV[id]={dv:o.dv,V:o.V,pct:100*o.dv/o.V}})}
+const _sim=sim;sim=function(){_sim();if(running&&R.ph&&R.ph.length&&comps.some(c=>c.type=='src3')&&!R.short){R.I=Math.max(...R.ph);meter()}try{proAnalyze()}catch(e){PROW={};PROV={}}};
+const _meter=meter;meter=function(){_meter();const e=$('#iph');if(e)e.textContent=(R.ph&&R.ph.length&&running&&comps.some(c=>c.type=='src3'))?'L1 '+R.ph[0].toFixed(1)+' · L2 '+R.ph[1].toFixed(1)+' · L3 '+R.ph[2].toFixed(1)+' A':''};
+function proPanel(){const e=$('#prot');if(!e||!PRO)return;if(!running){e.textContent='Press Run to see cable currents and voltage drop.';return}
+ let w=0,l=null,lp=0;Object.values(PROW).forEach(p=>{if(p.util>w)w=p.util});Object.entries(PROV).forEach(([id,v])=>{if(v.pct>lp&&byId(id)){lp=v.pct;l=id}});
+ e.innerHTML=(l?`Worst voltage drop <b style="color:${lp>5?'#dc2626':lp>3?'#d97706':'#16a34a'}">${lp.toFixed(1)} %</b> at ${TY[byId(l).type].n}`:'Voltage drop: –')+'<br>'+(w?`Busiest cable <b style="color:${w>1?'#dc2626':'inherit'}">${Math.round(w*100)} %</b> of its rating`:'Cables: –')}
+const _an=analyze;analyze=function(){const o=_an();if(!o||!PRO||!running)return o;
+ wires.forEach(w=>{const p=PROW[w.id];if(p&&p.util>1)o.push({sev:'warn',msg:'A '+wsz(w)+' mm² cable carries '+p.i.toFixed(1)+' A (its limit is about '+p.amp+' A).',fix:'Select the marked wire and choose a bigger cable size, or reduce the load on it.',tg:[{k:'w',id:w.id}]})});
+ Object.entries(PROV).forEach(([id,v])=>{const c=byId(id);if(c&&v.pct>5)o.push({sev:'warn',msg:TY[c.type].n+': voltage drop is '+v.pct.toFixed(1)+' % (limit 5 %).',fix:'Use thicker cables, or move the load closer to the supply.',tg:[{k:'c',id}]})});
+ return o};
+/* ---------- overlays on the canvas ---------- */
+const _render=render;render=function(){_render();xoverlay()};
+function xoverlay(){const vp=$('#vp');if(!vp)return;let h='';
+ msel.forEach(id=>{const c=byId(id);if(!c){msel.delete(id);return}const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC,hh=(o?T.w:T.h)*SC;h+=`<rect x="${c.x-w/2-4}" y="${c.y-hh/2-4}" width="${w+8}" height="${hh+8}" rx="8" fill="rgba(37,99,235,.08)" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4" pointer-events="none"/>`});
+ comps.forEach(c=>{if(!c.label||c.type=='note')return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC;h+=`<text class="lb" x="${c.x}" y="${c.y+eh/2+28}" style="font-weight:700;fill:#111827" pointer-events="none">${XESC(c.label)}</text>`});
+ if(PRO&&running){wires.forEach(w=>{const p=PROW[w.id];if(p&&p.util>1)h+=`<path d="${wd(w)}" fill="none" stroke="#ef4444" stroke-width="10" opacity=".35" stroke-linecap="round" pointer-events="none"/>`});
+  comps.forEach(c=>{const v=PROV[c.id];if(!v)return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC,col=v.pct>5?'#dc2626':v.pct>3?'#d97706':'#16a34a';h+=`<text class="lb" x="${c.x}" y="${c.y-eh/2-4}" style="font-weight:700;fill:${col}" pointer-events="none">−${v.pct.toFixed(1)} %</text>`})}
+ h+='<g id="heatg" pointer-events="none"></g>';vp.insertAdjacentHTML('beforeend',h);heatDraw()}
+/* ---------- Learn hints ---------- */
+const TIPS={src:'Supplies the circuit. L = live (red), N = neutral (blue), E = earth (green).',mcb:'Cuts the circuit on overload or short circuit. Put it on the live wire.',rcd:'Trips when current leaks to earth. Live and neutral both pass through it.',rcbo:'An RCD and an MCB in one device.',sw1:'Always switch the live wire, never the neutral. Tap the switch to toggle it.',sw2:'Two of these control one lamp from two places.',swi:'Goes between two 2-way switches to control a lamp from three places.',lamp:'Connect it between live and neutral.',sock:'Connect L, N and E (earth). Protect it with an RCD.',fuse:'Melts and opens the circuit when the current is too high.',motor:'Needs live and neutral. It spins when powered.',oven:'A big load (about 3 kW) – it needs a strong breaker.',heater:'A big load (about 2 kW).',src3:'Three live phases (L1–L3), neutral and earth. 230 V phase to neutral, 400 V between phases.',motor3:'Connect U, V, W to L1, L2, L3 – usually through a 3-pole breaker.',mcb3:'One pole per phase. All three open together.',note:'Use Edit text to change what it says.',batt:'Stores solar energy. Use a charge controller between panel and battery.',pv:'Makes DC power from sunlight. Change the sun level in Meters & solar.',mppt:'Charge controller: panel on the PV side, battery on the BAT side.',inv:'Turns battery DC into AC.',meter:'Counts energy used, in kWh.',db:'Distribution board: splits one supply into several protected circuits.',timer:'Turns itself off after 10 seconds.',pb:'Push button – closed only while you hold it.',relay:'A switch operated by a small control current.'};
+/* ---------- selection bar & menus ---------- */
+const RATED=c=>c.s&&('rate' in c.s||c.type=='db');
+const _ui=ui;ui=function(){_ui();xui()};
+function xui(){document.querySelectorAll('#modeseg [data-a]').forEach(b=>b.classList.toggle('on',(b.dataset.a=='mpro')==PRO));
+ $('#bsel').classList.toggle('on',selMode);$('#pro').hidden=!PRO;const x=$('#ctx'),tip=$('#tip');let t='';
+ if(msel.size){$('#bd').disabled=false;$('#bro').disabled=true;x.innerHTML=`<span class="cnt">${msel.size} selected</span><button data-x="mcopy">Copy</button><button data-x="mdel">Delete</button><button data-x="mclr">Done</button>`}
+ else{const c=sel&&byId(sel);
+  if(c){let a='';
+   if(PRO&&RATED(c)){const rl=c.type=='db'?[6,10,16,20,25,32,40,63]:rateList(c),r=c.s.rate||32;a+=`<select id="cr" title="Rating (A)">${rl.map(v=>`<option value="${v}"${v==r?' selected':''}>${v} A</option>`).join('')}</select>`;
+    if(c.type!='cb'&&c.type!='mccb')a+=`<select data-x="curve" title="Trip curve">${['B','C','D'].map(v=>`<option${v==curveOf(c)?' selected':''}>${v}</option>`).join('')}</select><button data-x="curve-show">Curve</button>`}
+   a+=`<button data-x="label">${c.type=='note'?'Edit text':c.label?'Rename':'Label'}</button>`;x.insertAdjacentHTML('beforeend',a);if(!PRO)t=TIPS[c.type]||''}
+  else if(selW&&PRO){const w=wires.find(w=>w.id==selW);if(w){const p=PROW[w.id];x.innerHTML=`<span class="cnt">${WN[w.k]||w.k} · ${wlen(w).toFixed(1)} m${p?' · '+p.i.toFixed(1)+' A':''}</span>${w.k=='E'&&0?'':`<select data-x="wsz" title="Cable size">${SIZES.map(v=>`<option value="${v}"${v==wsz(w)?' selected':''}>${v} mm²</option>`).join('')}</select>`}<button data-i="w">Delete wire</button>`}}}
+ tip.textContent=t;tip.hidden=!t}
+$('#ctx').addEventListener('click',e=>{const b=e.target.closest('[data-x]');if(!b)return;const a=b.dataset.x;
+ if(a=='label'){const c=byId(sel);if(c)labelUI(c)}else if(a=='curve-show'){const c=byId(sel);if(c)curveUI(c)}
+ else if(a=='mcopy')mcopy();else if(a=='mdel')del();else if(a=='mclr'){msel.clear();render();ui()}});
+$('#ctx').addEventListener('change',e=>{const t=e.target;if(t.dataset.x=='curve'){const c=byId(sel);if(c){push();c.s.curve=t.value;after()}}
+ else if(t.dataset.x=='wsz'){const w=wires.find(w=>w.id==selW);if(w){push();w.sz=+t.value;after()}}});
+function setMode(p){PRO=!!p;try{localStorage.setItem('hmode',PRO?'pro':'learn')}catch(e){}HEAT={};$('#sm').hidden=true;log(PRO?'Pro mode: cable sizes, voltage drop and trip curves':'Learn mode: simple view with hints');after()}
+$('#pcab').onchange=e=>{const v=+e.target.value;e.target.value='';if(!v)return;push();CABDEF=v;wires.forEach(w=>w.sz=v);after()};
+$('#psc').onchange=e=>{CABM=+e.target.value;after()};
+/* ---------- labels ---------- */
+function labelUI(c){modal(c.type=='note'?'Edit note':'Label',`<input id="lbi" maxlength="40" value="${XESC(c.label||'')}" placeholder="${c.type=='note'?'Write a note':'e.g. Kitchen lamp'}" style="width:100%;box-sizing:border-box;min-height:40px;border:1px solid var(--bd);border-radius:8px;padding:0 10px;font:inherit;background:var(--bg);color:var(--ink)"><div class="mbtns"><button class="big pri" data-lb="ok">Save</button>${c.label&&c.type!='note'?'<button class="big" data-lb="clr">Remove label</button>':''}</div>`);
+ const i=$('#lbi');i.onkeydown=e=>{if(e.key=='Enter')lbAct('ok')};setTimeout(()=>{i.focus();i.select()},60)}
+function lbAct(a){const c=byId(sel);if(!c)return $('#md').close();push();const v=$('#lbi').value.trim();if(a=='clr'||!v)delete c.label;else c.label=v;$('#md').close();after()}
+/* ---------- trip curve chart ---------- */
+function curveUI(c){const rate=c.s.rate||32,cur=curveOf(c);let now=null;
+ if(running){try{const d=devI().find(z=>z.id==c.id||z.id.startsWith(c.id+'#'));if(d)now=d.i/rate}catch(e){}}
+ const X0=46,X1=440,Y0=14,Y1=250,lx=x=>X0+Math.log10(x)/Math.log10(50)*(X1-X0),ly=t=>Y1-(Math.log10(t)+2)/7*(Y1-Y0);
+ const path=cv=>{let d='';for(let x=1.13;x<=50.01;x*=1.06){const t=Math.max(.01,Math.min(1e5,tripTime(x,cv)));d+=(d?'L':'M')+lx(x).toFixed(1)+' '+ly(t).toFixed(1)}return d};
+ let g='';[.01,.1,1,10,100,1000,1e4].forEach(t=>{g+=`<path d="M${X0} ${ly(t)}H${X1}" stroke="#e5e7eb"/><text x="${X0-6}" y="${ly(t)+3}" text-anchor="end" font-size="9" fill="#6b7280">${t>=1000?t/1000+'k':t}</text>`});
+ [1,2,5,10,20,50].forEach(x=>{g+=`<path d="M${lx(x)} ${Y0}V${Y1}" stroke="#e5e7eb"/><text x="${lx(x)}" y="${Y1+13}" text-anchor="middle" font-size="9" fill="#6b7280">${x}×</text>`});
+ const col={B:'#16a34a',C:'#2563eb',D:'#d97706'};
+ let pl='';['B','C','D'].forEach(k=>{pl+=`<path d="${path(k)}" fill="none" stroke="${col[k]}" stroke-width="${k==cur?3:1.5}" opacity="${k==cur?1:.45}"/><text x="${lx(CURVE_MAG[k])+4}" y="${ly(.02)-8}" font-size="11" font-weight="700" fill="${col[k]}">${k}</text>`});
+ if(now&&now>0){const xx=Math.max(1,Math.min(50,now)),t=Math.max(.01,Math.min(1e5,tripTime(now,cur)));pl+=`<path d="M${lx(xx)} ${Y0}V${Y1}" stroke="#dc2626" stroke-dasharray="4 3"/><circle cx="${lx(xx)}" cy="${t>=1e5?Y0:ly(t)}" r="4" fill="#dc2626"/>`}
+ modal('Trip curve · '+TY[c.type].n+' '+rate+' A',`<svg viewBox="0 0 460 285" style="width:100%;background:#fff;border:1px solid var(--bd);border-radius:8px">${g}${pl}<text x="${(X0+X1)/2}" y="278" text-anchor="middle" font-size="10" fill="#374151">Current ÷ rated current (log)</text><text transform="translate(11 ${(Y0+Y1)/2}) rotate(-90)" text-anchor="middle" font-size="10" fill="#374151">Time to trip, seconds (log)</text></svg><p style="font-size:13px;margin:8px 0 0">Curve <b>${cur}</b>: the breaker trips <b>instantly</b> above ${CURVE_MAG[cur]}× its rating and <b>slowly</b> below that (the lower the overload, the longer it takes).${now?(now<=1.13?` Your circuit now draws <b>${now.toFixed(2)}×</b> – below the trip region, so it never trips.`:` Your circuit now draws <b>${now.toFixed(2)}×</b> (red dot).`):running?'':' Press Run to see where your circuit sits (red dot).'}</p>`)}
+/* ---------- multi-select ---------- */
+function mcopy(){push();const m={},ns=[];msel.forEach(id=>{const c=byId(id);if(!c)return;const n=clone(c);n.id='c'+nid++;n.x+=45;n.y+=45;m[id]=n.id;comps.push(n);ns.push(n.id)});
+ wires.slice().forEach(w=>{const a=w.a.split(':'),b=w.b.split(':');if(m[a[0]]&&m[b[0]])wires.push({...w,id:'w'+nid++,a:m[a[0]]+':'+a[1],b:m[b[0]]+':'+b[1]})});msel=new Set(ns);after()}
+const _del=del;del=function(){if(msel.size){push();const ids=[...msel];comps=comps.filter(c=>!msel.has(c.id));wires=wires.filter(w=>!ids.some(id=>w.a.startsWith(id+':')||w.b.startsWith(id+':')));msel=new Set();after();return}_del()};
+const _pd=svg.onpointerdown,_pm=svg.onpointermove,_pu=svg.onpointerup,SVGNS='http://www.w3.org/2000/svg';
+svg.onpointerdown=function(e){
+ if(ptrs.size>=1){const r=mdrag;mdrag=null;if(r&&r.k=='box'){const b=$('#selbox');if(b)b.remove()}return _pd.call(this,e)}
+ const t=e.target,tm=t.closest&&t.closest('[data-t]'),cm=t.closest&&t.closest('[data-id]'),wm=t.closest&&t.closest('[data-w]'),mi=selMode||e.shiftKey||e.ctrlKey||e.metaKey;
+ const grab=()=>{document.querySelectorAll('.panel.open').forEach(x=>x.classList.remove('open'));svg.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY})};
+ if(!tm&&!probe&&e.button!==2){
+  if(cm&&(mi||(msel.size>1&&msel.has(cm.dataset.id)))){const c=byId(cm.dataset.id);if(c){grab();if(mi&&!msel.size&&sel&&sel!=c.id)msel.add(sel);const was=msel.has(c.id);if(mi&&!was)msel.add(c.id);sel=selW=null;
+    mdrag={k:'grp',id:c.id,sx:e.clientX,sy:e.clientY,was,mi,moved:0,vx:view.x,vy:view.y,orig:[...msel].map(id=>{const q=byId(id);return[id,q.x,q.y]})};render();ui();return}}
+  if(!cm&&!wm&&mi){grab();const[x,y]=wpt(e);mdrag={k:'box',sx:e.clientX,sy:e.clientY,x0:x,y0:y};return}}
+ if(msel.size){msel=new Set();render();ui()}
+ return _pd.call(this,e)};
+svg.onpointermove=function(e){
+ if(mdrag&&ptrs.has(e.pointerId)){ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});const d=mdrag,dx=e.clientX-d.sx,dy=e.clientY-d.sy;
+  if(d.k=='grp'){if(!d.moved&&Math.hypot(dx,dy)<4)return;if(!d.moved){d.moved=1;if(moveOn)push()}
+   if(moveOn){d.orig.forEach(([id,ox,oy])=>{const c=byId(id);if(c){c.x=SN(ox+dx/view.z);c.y=SN(oy+dy/view.z)}});render()}else{view.x=d.vx+dx;view.y=d.vy+dy;applyView()}}
+  else{let r=$('#selbox');if(!r){r=document.createElementNS(SVGNS,'rect');r.id='selbox';r.setAttribute('fill','rgba(37,99,235,.12)');r.setAttribute('stroke','#2563eb');r.setAttribute('stroke-dasharray','5 4');r.setAttribute('pointer-events','none');$('#vp').appendChild(r)}
+   const[x,y]=wpt(e);r.setAttribute('x',Math.min(d.x0,x));r.setAttribute('y',Math.min(d.y0,y));r.setAttribute('width',Math.abs(x-d.x0));r.setAttribute('height',Math.abs(y-d.y0))}
+  return}
+ return _pm.call(this,e)};
+svg.onpointerup=svg.onpointercancel=function(e){
+ if(mdrag){const d=mdrag;mdrag=null;ptrs.delete(e.pointerId);pd=0;if(ptrs.size<2)gm=null;
+  if(d.k=='grp'){if(d.moved){if(moveOn)after();else render()}
+   else if(d.mi){if(d.was)msel.delete(d.id);render();ui()}
+   else{const c=byId(d.id);msel=new Set();if(c){sel=c.id;render();ui();toggle(c,e)}}}
+  else{const r=$('#selbox');if(r)r.remove();const[x1,y1]=wpt(e);
+   if(Math.hypot(e.clientX-d.sx,e.clientY-d.sy)>5){const xa=Math.min(d.x0,x1),xb=Math.max(d.x0,x1),ya=Math.min(d.y0,y1),yb=Math.max(d.y0,y1);comps.forEach(c=>{if(c.x>=xa&&c.x<=xb&&c.y>=ya&&c.y<=yb)msel.add(c.id)})}else msel=new Set();
+   sel=selW=null;render();ui()}
+  return}
+ return _pu.call(this,e)};
+addEventListener('keydown',e=>{if(['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName)||document.querySelector('dialog[open]'))return;
+ if(e.key=='Escape'&&(msel.size||selMode)){msel=new Set();selMode=false;render();ui()}
+ else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()=='a'){e.preventDefault();comps.forEach(c=>msel.add(c.id));sel=selW=null;render();ui()}});
+/* ---------- export: PNG / PDF ---------- */
+function saveBlob(b,n){const u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download=n;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)}
+async function inlineImgs(root){const ims=[...root.querySelectorAll('image')];await Promise.all(ims.map(async im=>{const h=im.getAttribute('href')||im.getAttributeNS('http://www.w3.org/1999/xlink','href');if(!h||h.startsWith('data:'))return;try{const b=await (await fetch(h)).blob(),u=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(b)});im.setAttribute('href',u)}catch(e){}}))}
+async function diagramImage(scale){const keep={sel,selW,mk:mkr,ms:msel};sel=selW=null;mkr=null;msel=new Set();let vp;try{render();vp=$('#vp').cloneNode(true)}finally{sel=keep.sel;selW=keep.selW;mkr=keep.mk;msel=keep.ms;render()}
+ ['#bgr','#pv','#snap','#heatg','#mks','#selbox'].forEach(q=>vp.querySelectorAll(q).forEach(n=>n.remove()));vp.querySelectorAll('.hit,.term,.flow').forEach(n=>n.remove());await inlineImgs(vp);
+ let bb=[1e9,1e9,-1e9,-1e9];comps.forEach(c=>{const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC/2,h=(o?T.w:T.h)*SC/2;bb=[Math.min(bb[0],c.x-w),Math.min(bb[1],c.y-h),Math.max(bb[2],c.x+w),Math.max(bb[3],c.y+h+40)]});
+ wires.forEach(w=>wpts(w,LN[w.id]||0).forEach(p=>{bb=[Math.min(bb[0],p[0]),Math.min(bb[1],p[1]),Math.max(bb[2],p[0]),Math.max(bb[3],p[1])]}));
+ const pad=26,x=bb[0]-pad,y=bb[1]-pad-22,w=bb[2]-bb[0]+2*pad,h=bb[3]-bb[1]+2*pad+22,sc=Math.min(scale,6000/Math.max(w,h)),css='.s{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.lb{font:11px sans-serif;fill:#374151;text-anchor:middle}.lt{font:600 9px sans-serif;fill:#fff;text-anchor:middle}.body{fill:transparent}';
+ const svgT=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="${x} ${y} ${w} ${h}" width="${Math.round(w*sc)}" height="${Math.round(h*sc)}" style="color:#111"><style>${css}</style><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#fff"/><text x="${x+12}" y="${y+18}" style="font:600 12px sans-serif;fill:#6b7280">ElecSimulator · ${new Date().toLocaleDateString('en-GB')}</text>${vp.innerHTML}</svg>`;
+ const img=new Image();await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgT)});
+ const cv=document.createElement('canvas');cv.width=Math.round(w*sc);cv.height=Math.round(h*sc);const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(img,0,0,cv.width,cv.height);return cv}
+function pdfFromJpeg(jpg,iw,ih,title){const enc=s=>new TextEncoder().encode(s),land=iw>=ih,PW=land?842:595,PH=land?595:842,m=36,sc=Math.min((PW-2*m)/iw,(PH-2*m-18)/ih),w=iw*sc,h=ih*sc,x=(PW-w)/2,y=PH-m-18-h;
+ const parts=[],offs=[];let len=0;const put=b=>{if(typeof b=='string')b=enc(b);parts.push(b);len+=b.length},obj=(n,fn)=>{offs[n]=len;put(n+' 0 obj\n');fn();put('\nendobj\n')};
+ put('%PDF-1.4\n');obj(1,()=>put('<</Type/Catalog/Pages 2 0 R>>'));obj(2,()=>put('<</Type/Pages/Kids[3 0 R]/Count 1>>'));
+ obj(3,()=>put(`<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${PW} ${PH}]/Resources<</XObject<</Im0 5 0 R>>/Font<</F1 6 0 R>>>>/Contents 4 0 R>>`));
+ const cs=`q ${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q BT /F1 11 Tf ${m} ${PH-m-4} Td (${title.replace(/[()\\]/g,' ')}) Tj ET`;
+ obj(4,()=>put(`<</Length ${cs.length}>>\nstream\n${cs}\nendstream`));
+ obj(5,()=>{put(`<</Type/XObject/Subtype/Image/Width ${iw}/Height ${ih}/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ${jpg.length}>>\nstream\n`);put(jpg);put('\nendstream')});
+ obj(6,()=>put('<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>'));
+ const xr=len;put('xref\n0 7\n0000000000 65535 f \n'+[1,2,3,4,5,6].map(n=>String(offs[n]).padStart(10,'0')+' 00000 n \n').join('')+`trailer\n<</Size 7/Root 1 0 R>>\nstartxref\n${xr}\n%%EOF`);
+ return new Blob(parts,{type:'application/pdf'})}
+async function xExport(kind){if(!comps.length)return say('Nothing to export yet – add some components first.',1);say('Preparing…');
+ try{const cv=await diagramImage(2),name=fname().replace('.json','');
+  if(kind=='png'){const b=await new Promise(r=>cv.toBlob(r,'image/png'));saveBlob(b,name+'.png');say('✔ Saved '+name+'.png')}
+  else{const bin=atob(cv.toDataURL('image/jpeg',.92).split(',')[1]),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);saveBlob(pdfFromJpeg(u,cv.width,cv.height,'ElecSimulator circuit diagram - '+new Date().toLocaleDateString('en-GB')),name+'.pdf');say('✔ Saved '+name+'.pdf')}
+  log('Diagram exported as '+kind.toUpperCase())}catch(e){say('Could not create the picture on this device.',1)}}
+const _exportUI=exportUI;exportUI=function(){_exportUI();const m=document.querySelector('#mdb .mbtns');if(m)m.insertAdjacentHTML('beforeend','<button class="big" data-ex="png">🖼 PNG picture</button><button class="big" data-ex="pdf">📄 PDF</button>')};
+const _exAct=exAct;exAct=async function(a){if(a=='png'||a=='pdf')return xExport(a);return _exAct(a)};
+/* ---------- bill of materials ---------- */
+function bomData(){const items={};comps.forEach(c=>{if(c.type=='note')return;let d=TY[c.type].n;if(c.s&&c.s.rate)d+=' '+c.s.rate+' A'+(PRO&&(OP[c.type]||MP[c.type]||c.type=='db')?' (curve '+curveOf(c)+')':'');items[d]=(items[d]||0)+1});
+ const cab={};wires.forEach(w=>{const k=(WN[w.k]||w.k)+' cable '+wsz(w)+' mm²',o=cab[k]||(cab[k]={n:0,len:0});o.n++;o.len+=wlen(w)});return{items,cab}}
+function bomCSV(){const{items,cab}=bomData();return'Item,Quantity,Unit\n'+Object.entries(items).sort().map(([k,v])=>`"${k}",${v},pcs`).join('\n')+'\n'+Object.entries(cab).sort().map(([k,o])=>`"${k}",${o.len.toFixed(1)},m`).join('\n')}
+function bomUI(){$('#sm').hidden=true;const{items,cab}=bomData(),ik=Object.keys(items).sort(),ck=Object.keys(cab).sort();
+ if(!ik.length&&!ck.length)return modal('Bill of materials','<p>Nothing here yet – add some components first.</p>');
+ modal('Bill of materials',`<table class="bomt"><tr><th>Item</th><th>Qty</th></tr>${ik.map(k=>`<tr><td>${XESC(k)}</td><td>${items[k]}</td></tr>`).join('')}${ck.length?'<tr><th colspan="2">Cables (measured from your drawing)</th></tr>':''}${ck.map(k=>`<tr><td>${XESC(k)}</td><td>${cab[k].len.toFixed(1)} m</td></tr>`).join('')}</table><p style="font-size:12px;color:var(--mut);margin:6px 0 0">Cable length uses 1 grid square = ${CABM} m${PRO?'':' (change it in Pro mode)'}.</p><div class="mbtns"><button class="big pri" data-bm="csv">⬇ Download CSV</button><button class="big" data-bm="copy">📋 Copy</button></div>`)}
+async function bmAct(a){const t=bomCSV();if(a=='csv'){saveBlob(new Blob([t],{type:'text/csv'}),'ElecSimulator-parts.csv');say('✔ Saved the parts list')}else{try{await navigator.clipboard.writeText(t);say('✔ Copied')}catch(e){say('Could not copy automatically.',1)}}}
+/* ---------- lessons & examples ---------- */
+Object.assign(EX,{
+ parallel:{n:'Example: two lamps in parallel',p:[['src',90,270],['mcb',300,150],['sw1',510,150],['lamp',720,150],['lamp',720,300]],w:[[0,'L',1,'A','L'],[1,'B',2,'A','L'],[2,'B',3,'A','L'],[2,'B',4,'A','L'],[0,'N',3,'B','N'],[3,'B',4,'B','N']]},
+ gang:{n:'Example: 2-gang switch, two lamps',p:[['src',90,270],['mcb',300,150],['sw2g',510,150],['lamp',720,90],['lamp',720,270]],w:[[0,'L',1,'A','L'],[1,'B',2,'IN','L'],[2,'O1',3,'A','L'],[2,'O2',4,'A','L'],[0,'N',3,'B','N'],[3,'B',4,'B','N']]},
+ solar:{n:'Example: solar panel → battery → inverter → lamp',p:[['pv',90,150],['mppt',300,150],['batt',510,150],['inv',720,150],['lamp',930,270]],w:[[0,'P',1,'PP','P'],[0,'M',1,'PM','M'],[1,'BP',2,'P','P'],[1,'BM',2,'M','M'],[2,'P',3,'P','P'],[2,'M',3,'M','M'],[3,'L',4,'A','L'],[3,'N',4,'B','N']]},
+ threephase:{n:'Example: 3-phase motor with 3-pole breaker',p:[['src3',90,270],['mcb3',330,150],['motor3',600,270]],w:[[0,'L1',1,'A1','L'],[0,'L2',1,'A2','L'],[0,'L3',1,'A3','L'],[1,'B1',2,'U','L'],[1,'B2',2,'V','L'],[1,'B3',2,'W','L'],[0,'E',2,'E','E']]}});
+function setup(p,w,st,sz){comps=[];wires=[];sel=selW=null;msel=new Set();nid=1;const ids=p.map(([t,x,y])=>{const c=mk(t,x,y);comps.push(c);return c.id});
+ w.forEach(([a,an,b,bn,kd])=>{const o={id:'w'+nid++,a:ids[a]+':'+an,b:ids[b]+':'+bn,k:kd};if(sz)o.sz=sz;wires.push(o)});if(st)Object.entries(st).forEach(([i,o])=>Object.assign(comps[i].s,o))}
+const $c=t=>comps.filter(c=>c.type==t),
+ lit=c=>{try{return calc(0).pl.some(p=>p[0]==c.id)}catch(e){return false}},
+ withS=(l,fn)=>{const old=l.map(([c,k])=>c.s[k]);l.forEach(([c,k,v])=>c.s[k]=v);try{return fn()}finally{l.forEach(([c,k],i)=>c.s[k]=old[i])}};
+const LESSONS=[
+{id:'first',t:'Light a lamp',lv:'Beginner',d:'Wire a source to a lamp and switch it on.',st:[
+ {t:'Add an AC Source and a Lamp',h:'Open Comps, or drag the parts onto the canvas.',ok:()=>$c('src').length&&$c('lamp').length},
+ {t:'Draw a live (red) wire from L to the lamp',h:'Drag from the L terminal of the source to a terminal of the lamp.',ok:()=>{const s=$c('src')[0],l=$c('lamp')[0];if(!s||!l)return false;const f=build(),L=f(s.id+':L');return f(l.id+':A')==L||f(l.id+':B')==L}},
+ {t:'Draw a neutral (blue) wire from N to the lamp',h:'Choose the blue wire in Wires, then connect N to the other lamp terminal.',ok:()=>{const s=$c('src')[0],l=$c('lamp')[0];if(!s||!l)return false;const f=build(),L=f(s.id+':L'),N=f(s.id+':N'),a=f(l.id+':A'),b=f(l.id+':B');return(a==L&&b==N)||(b==L&&a==N)}},
+ {t:'Press Run – the lamp lights',h:'Press ▶ Run in the top bar.',ok:()=>running&&$c('lamp').some(l=>l.lit)}]},
+{id:'switch',t:'Switch and protect',lv:'Beginner',d:'Put a breaker and a switch in the live wire.',st:[
+ {t:'Add an MCB, a 1-way Switch and a Lamp',ok:()=>$c('src').length&&$c('mcb').length&&$c('sw1').length&&$c('lamp').length},
+ {t:'Wire source L → MCB → switch → lamp, and N → lamp',h:'The red live wire goes through the MCB and the switch. The blue neutral goes straight to the lamp.',ok:()=>{const w=$c('sw1')[0],l=$c('lamp')[0];return!!w&&!!l&&withS([[w,'on',1]],()=>lit(l))}},
+ {t:'The lamp goes off when the switch is OFF',h:'Tap the switch to toggle it.',ok:()=>{const w=$c('sw1')[0],l=$c('lamp')[0];return!!w&&!!l&&withS([[w,'on',1]],()=>lit(l))&&withS([[w,'on',0]],()=>!lit(l))}},
+ {t:'The MCB really is in the live path',h:'Turning the MCB off must also turn the lamp off.',ok:()=>{const w=$c('sw1')[0],l=$c('lamp')[0],m=$c('mcb')[0];return!!w&&!!l&&!!m&&withS([[w,'on',1]],()=>lit(l))&&withS([[w,'on',1],[m,'on',0]],()=>!lit(l))}}]},
+{id:'twoway',t:'Two-way lighting',lv:'Intermediate',d:'Control one lamp from two places.',st:[
+ {t:'Add two 2-way Switches and a Lamp',ok:()=>$c('src').length&&$c('sw2').length>=2&&$c('lamp').length},
+ {t:'Wire it so either switch changes the lamp',h:'Join L1–L1 and L2–L2 of the two switches. Live goes to C of the first, C of the second goes to the lamp.',ok:()=>{const[a,b]=$c('sw2'),l=$c('lamp')[0];if(!a||!b||!l)return false;const r=[];for(const p of[0,1])for(const q of[0,1])r.push(withS([[a,'pos',p],[b,'pos',q]],()=>lit(l)));return r[0]!=r[1]&&r[0]!=r[2]&&r[0]==r[3]}},
+ {t:'Press Run and flip the switches – the lamp turns on and off',h:'Press ▶ Run, then tap each 2-way switch.',ok:()=>!!(LES&&LES.f.seen&&LES.f.seen[0]&&LES.f.seen[1])}]},
+{id:'socket',t:'A safe socket',lv:'Intermediate',d:'Protect a socket with an MCB and an RCD, with earth.',st:[
+ {t:'Add a Socket, an RCD and an MCB',ok:()=>$c('sock').length&&($c('rcd').length||$c('rcbo').length)&&$c('mcb').length},
+ {t:'Connect live, neutral and earth to the socket',h:'Draw red, blue and green wires from the source to L, N and E of the socket.',ok:()=>{const s=$c('sock')[0],o=$c('src')[0];if(!s||!o)return false;const f=build();return f(s.id+':L')==f(o.id+':L')&&f(s.id+':N')==f(o.id+':N')&&f(s.id+':E')==f(o.id+':E')}},
+ {t:'Circuit check shows no problems',h:'Open Settings → Check circuit and follow the fixes.',ok:()=>{const a=analyze();return!!a&&a.length==0}}]},
+{id:'trip',t:'Why breakers trip',lv:'Beginner',d:'See an overloaded breaker protect the wiring.',
+ start:()=>setup([['src',90,270],['mcb',300,150],['oven',510,270]],[[0,'L',1,'A','L'],[1,'B',2,'A','L'],[0,'N',2,'B','N']],{1:{rate:10}}),st:[
+ {t:'Press Run – the 10 A MCB trips (the oven needs about 13 A)',h:'Press ▶ Run.',ok:()=>LES&&LES.f.tripped},
+ {t:'Delete the oven and connect a lamp instead',h:'Select the oven and press delete, add a lamp, then wire it like the oven was.',ok:()=>{const l=$c('lamp')[0],m=$c('mcb')[0];return!$c('oven').length&&!!l&&!!m&&withS([[m,'on',1]],()=>lit(l))}},
+ {t:'Turn the MCB back ON and press Run – the lamp lights',h:'Select the MCB and tap Turn ON.',ok:()=>running&&$c('lamp').some(l=>l.lit)}]},
+{id:'3ph',t:'Three-phase motor',lv:'Pro',pro:1,d:'Feed a 3-phase motor through a 3-pole breaker.',st:[
+ {t:'Add a 3-Phase Source, an MCB 3P and a 3-Phase Motor',ok:()=>$c('src3').length&&$c('mcb3').length&&$c('motor3').length},
+ {t:'Connect L1, L2, L3 through the breaker to U, V, W',h:'Each line goes to its own pole (A1–A3), then B1–B3 to U, V, W.',ok:()=>{const m=$c('motor3')[0];return!!m&&calc(0).pl.some(p=>p[0]==m.id)}},
+ {t:'Connect earth (E) to the motor',ok:()=>{const m=$c('motor3')[0],s=$c('src3')[0];if(!m||!s)return false;const f=build();return f(m.id+':E')==f(s.id+':E')}},
+ {t:'Press Run – the motor spins',ok:()=>running&&$c('motor3').some(m=>m.lit)}]},
+{id:'cable',t:'Size the cable',lv:'Pro',pro:1,d:'A long cable run – keep the voltage drop at 3 % or less.',
+ start:()=>setup([['src',90,270],['mcb',300,150],['heater',950,270]],[[0,'L',1,'A','L'],[1,'B',2,'A','L'],[0,'N',2,'B','N']],null,1.5),st:[
+ {t:'Press Run to see the voltage drop',h:'Pro mode shows the drop as a % above the heater.',ok:()=>PRO&&running},
+ {t:'No cable is overloaded',ok:()=>PRO&&running&&Object.values(PROW).length>0&&Object.values(PROW).every(p=>p.util<=1)},
+ {t:'Voltage drop at the heater is 3 % or less',h:'Select a wire and pick a bigger size, or use “Set all cables to…” in the right panel.',ok:()=>PRO&&running&&Object.values(PROV).length>0&&Object.values(PROV).every(v=>v.pct<=3)}]}];
+function startLesson(id){const L=LESSONS.find(l=>l.id==id);if(!L)return;push();running=false;msel=new Set();HEAT={};comps=[];wires=[];sel=selW=null;nid=1;if(L.start)L.start();
+ if(L.pro&&!PRO){PRO=true;try{localStorage.setItem('hmode','pro')}catch(e){}}LES={L,f:{},hint:null};$('#md').close();after();fit();log('Lesson: '+L.t)}
+function lessonCard(){const el=$('#lsn');if(!LES){el.hidden=true;return}const L=LES.L,done=L.st.map(s=>{try{return!!s.ok()}catch(e){return false}}),first=done.indexOf(false);
+ if(first<0){try{const d=JSON.parse(localStorage.getItem('hles')||'{}');d[L.id]=1;localStorage.setItem('hles',JSON.stringify(d))}catch(e){}}
+ el.hidden=false;el.innerHTML=`<div class="lh"><b>${XESC(L.t)}</b><button data-l="x" title="Close lesson">✕</button></div>`+L.st.map((s,i)=>`<div class="ls ${done[i]?'d':i==first?'n':''}"><span>${done[i]?'✓':i+1}</span><div>${XESC(s.t)}</div></div>`).join('')+
+  (first>=0?`${LES.hint===first?`<div class="lhint">${XESC(L.st[first].h||'Look at the step above and try it.')}</div>`:''}<div class="lb2"><button data-l="hint">Hint</button><button data-l="check">Check circuit</button></div>`:`<div class="lhint" style="color:#16a34a;font-weight:600">🎉 Lesson complete</div><div class="lb2"><button data-l="next">Next lesson</button><button data-l="x">Close</button></div>`)}
+function lessonTick(){if(!LES)return;if(running){const l=$c('lamp')[0];if(l){LES.f.seen=LES.f.seen||{};LES.f.seen[l.lit?1:0]=1}}if(running&&comps.some(c=>c.type=='mcb'&&!c.s.on))LES.f.tripped=1;lessonCard()}
+$('#lsn').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b||!LES)return;const a=b.dataset.l;
+ if(a=='x'){LES=null;lessonCard()}else if(a=='hint'){const d=LES.L.st.map(s=>{try{return!!s.ok()}catch(e){return false}}).indexOf(false);LES.hint=LES.hint===d?null:d;lessonCard()}
+ else if(a=='check')check();else if(a=='next'){const i=LESSONS.findIndex(l=>l.id==LES.L.id),n=LESSONS[i+1];if(n)startLesson(n.id);else{LES=null;lessonCard()}}});
+function lessonsUI(){$('#sm').hidden=true;let done={};try{done=JSON.parse(localStorage.getItem('hles')||'{}')}catch(e){}const col={Beginner:'#16a34a',Intermediate:'#d97706',Pro:'#7c3aed'};
+ modal('Lessons & examples','<p style="margin:0 0 8px;color:var(--mut);font-size:13px">Build each circuit step by step – your progress is checked as you draw.</p><div class="lsl">'+LESSONS.map(l=>`<button class="lsi" data-ls="${l.id}"><span class="lsk">${done[l.id]?'✓':''}</span><span><b>${XESC(l.t)}</b><em style="background:${col[l.lv]}">${l.lv}</em><br><small>${XESC(l.d)}</small></span></button>`).join('')+'</div><h4 style="margin:14px 0 6px">Ready-made examples</h4><div class="lsl">'+Object.keys(EX).map(k=>`<button class="lsi" data-xl="${k}"><span class="lsk"></span><span><b>${XESC(EX[k].n.replace(/^Example: /,''))}</b></span></button>`).join('')+'</div>')}
+$('#md').addEventListener('click',e=>{const b=e.target.closest('[data-lb],[data-bm],[data-ls],[data-xl]');if(!b)return;
+ if(b.dataset.lb)lbAct(b.dataset.lb);else if(b.dataset.bm)bmAct(b.dataset.bm);else if(b.dataset.ls)startLesson(b.dataset.ls);else if(b.dataset.xl){$('#md').close();loadEx(b.dataset.xl)}});
+/* ---------- wiring it all up ---------- */
+Object.assign(ACT,{del,selmode(){selMode=!selMode;if(!selMode&&!msel.size){}log(selMode?'Select mode: tap parts or drag a box around them. Tap ⬚ again to finish.':'Select mode off');ui()},
+ mlearn(){setMode(0)},mpro(){setMode(1)},lessons(){lessonsUI()},bom(){bomUI()},check(){$('#sm').hidden=true;check()},fb(){$('#sm').hidden=true;openFB()},
+ dup(){if(msel.size)return mcopy();const c=byId(sel);if(c){push();const n=clone(c);n.id='c'+nid++;n.x+=45;n.y+=45;comps.push(n);sel=n.id;after()}}});
+const _after=after;after=function(){_after();proPanel();lessonTick()};
+Object.assign(KW,{src3:'three phase 3 phase 400v supply',motor3:'three phase motor 3 phase',note:'text label annotation comment'});
+pal(true);ui();render();proPanel();lessonCard();
+
 </script><script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 </body></html>

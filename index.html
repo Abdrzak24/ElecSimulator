@@ -170,7 +170,8 @@ body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var
 @media(min-width:821px) and (min-height:521px){
  main{grid-template-columns:1fr!important}
  .panel{position:fixed;top:var(--tbh);bottom:0;width:300px;z-index:15;box-shadow:0 0 24px #0004;transition:transform .2s;max-height:none}
- #left{left:0;transform:translateX(-105%)}#right{right:0;transform:translateX(105%)}.panel.open{transform:none}
+ #left{left:0;transform:translateX(-105%)}#right{right:0;transform:translateX(105%)}
+ #left.panel.open,#right.panel.open{transform:none!important}
 }
 @media(max-width:820px),(max-height:520px){body #tb{flex-direction:row!important}.tab{min-width:48px!important}}
 #st{max-width:30vw}
@@ -741,7 +742,7 @@ $('#pbar').onclick=e=>{const b=e.target.closest('[data-pb]');if(!b)return;const 
 const circuitText=()=>JSON.stringify({app:'ElecSimulator',version:2,comps,wires,nid});
 const fname=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return`ElecSimulator-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}.json`};
 function exportUI(){let can=false;try{can=!!(navigator.canShare&&navigator.canShare({files:[new File(['{}'],'a.json',{type:'application/json'})]}))}catch(e){}
- modal('Export circuit',`<p>Save your circuit as a file – no text to copy. To open it again, press <b>Import</b> and pick the file.</p><div class="mbtns"><button class="big pri" data-ex="dl">⬇ Download file</button>${can?'<button class="big" data-ex="share">📤 Share / send</button>':''}<button class="big" data-ex="copy">📋 Copy to clipboard</button></div><details><summary>Show the text</summary><textarea id="ext" readonly></textarea></details>`);$('#ext').value=circuitText()}
+ modal('Export circuit',`<p>Save your circuit as a file – no text to copy. To open it again, tap <b>⚙ Settings → Import circuit</b> and pick the file.</p><div class="mbtns"><button class="big pri" data-ex="dl">⬇ Download file</button>${can?'<button class="big" data-ex="share">📤 Share / send</button>':''}<button class="big" data-ex="copy">📋 Copy to clipboard</button></div><details><summary>Show the text</summary><textarea id="ext" readonly></textarea></details>`);$('#ext').value=circuitText()}
 async function exAct(a){const t=circuitText();
  if(a=='dl'){const n=fname(),u=URL.createObjectURL(new Blob([t],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download=n;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);say('✔ Downloaded '+n);log('Circuit exported to a file')}
  else if(a=='share'){try{await navigator.share({files:[new File([t],fname(),{type:'application/json'})],title:'ElecSimulator circuit'})}catch(e){if(e.name!='AbortError')say('Sharing did not work – use Download instead.',1)}}

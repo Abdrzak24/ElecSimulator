@@ -572,10 +572,10 @@ const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='252634454547';
 function openFB(){$('#fv').textContent=APP_VERSION;$('#fd').showModal()}
 async function sendFB(){const m=$('#fm').value.trim(),S=t=>{$('#fs').textContent=t};if(!m){S('Please write your feedback first.');return}
  const o={name:$('#fn').value,contact:$('#fc').value,type:$('#ft').value,part:$('#fa').value,rating:$('#fr').value,message:m,version:APP_VERSION,screen:innerWidth+'x'+innerHeight,device:navigator.userAgent,time:new Date().toISOString()};
- if($('#fk').checked){try{o.circuit=snapS()}catch(e){}}
+ if($('#fk').checked){try{o.circuit=await circuitLink()}catch(e){}}
  if(FB_URL){try{const r=await fetch(FB_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(o)});if(!r.ok)throw 0;S('✔ Thank you! Your feedback was sent.');$('#fm').value='';setTimeout(()=>$('#fd').close(),1600)}catch(e){S('Could not send (check your internet). Your text is kept – try again.')}return}
  const t='ElecSim feedback '+APP_VERSION+'\nName: '+o.name+'\nContact: '+o.contact+'\nType: '+o.type+'\nPart: '+o.part+'\nRating: '+o.rating+'/5\n\n'+m+'\n\nDevice: '+o.screen+' '+o.device+(o.circuit?'\n\nCircuit: '+o.circuit:'');
- const t2=t.split('\n\nCircuit: ')[0]+(o.circuit?'\n\n(Circuit not included in this link – use Save to send it.)':'');
+ const t2=t;
  if(FB_EMAIL){S('Opening your email app…');location.href='mailto:'+FB_EMAIL+'?subject='+encodeURIComponent('ElecSim feedback '+APP_VERSION)+'&body='+encodeURIComponent(t2);return}
  if(FB_WA){S('Opening WhatsApp…');window.open('https://wa.me/'+String(FB_WA).replace(/\D/g,'')+'?text='+encodeURIComponent(t2),'_blank');return}
  try{if(navigator.share){await navigator.share({title:'ElecSim feedback',text:t});return}}catch(e){return}
@@ -647,9 +647,10 @@ function lanes(){const o={},items=[];
   arr.forEach(t=>{if(cl.length&&t.m-cl[cl.length-1].m>=9)flush();cl.push(t)});flush()});
  return o}
 let CT={};
+const WW=w=>Math.max(2.5,Math.min(13,4*Math.sqrt((w.sz||(typeof CABDEF=='number'?CABDEF:2.5))/2.5)));
 function render(){LN=lanes();CT={};wires.forEach(w=>{CT[w.a]=CT[w.b]=WC[w.k]||'#111'});
  let h=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#fde047" stop-opacity=".8"/><stop offset="1" stop-color="#fde047" stop-opacity="0"/></radialGradient><radialGradient id="gr"><stop offset="0" stop-color="#ef4444" stop-opacity=".7"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/></radialGradient><radialGradient id="tcu" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fcd9a0"/><stop offset=".55" stop-color="#e08a2e"/><stop offset="1" stop-color="#9a4a0e"/></radialGradient><linearGradient id="blk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b0d12"/><stop offset=".3" stop-color="#3a3f4a"/><stop offset="1" stop-color="#0b0d12"/></linearGradient><linearGradient id="wht" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cbd5e1"/><stop offset=".3" stop-color="#f8fafc"/><stop offset="1" stop-color="#cbd5e1"/></linearGradient><linearGradient id="pl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e9e2"/><stop offset="1" stop-color="#e3c7b9"/></linearGradient><linearGradient id="lev" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".4" stop-color="#5b7cf7"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient><linearGradient id="lvg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b7280"/><stop offset=".4" stop-color="#e5e7eb"/><stop offset="1" stop-color="#6b7280"/></linearGradient><linearGradient id="brs" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#92400e"/><stop offset=".35" stop-color="#fcd34d"/><stop offset="1" stop-color="#92400e"/></linearGradient><radialGradient id="gls" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#bcd3e6" stop-opacity=".55"/></radialGradient><radialGradient id="glw" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fffef0"/><stop offset="1" stop-color="#fde047"/></radialGradient><clipPath id="pcl" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".1"/></clipPath><pattern id="g" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e5e7eb"/></pattern></defs><rect id="bgr" x="-5000" y="-5000" width="10000" height="10000" fill="${grid?'url(#g)':'#fff'}"/>`;
- h+=wires.map(w=>{const d=wd(w);return`<g data-w="${w.id}"><path class="hit" d="${d}"/>`+(selW==w.id?`<path d="${d}" fill="none" stroke="#f59e0b" stroke-width="9" opacity=".5"/>`:'')+(running&&w.live?`<path d="${d}" fill="none" stroke="#fde68a" stroke-width="9" opacity=".6"/>`:'')+`<path d="${d}" fill="none" stroke="${WC[w.k]}" stroke-width="4" pointer-events="none"/>`+(w.k=='E'?`<path d="${d}" fill="none" stroke="#facc15" stroke-width="4" stroke-dasharray="8 8" pointer-events="none"/>`:'')+(w.flow?`<path class="flow" d="${d}" pointer-events="none"/>`:'')+'</g>'}).join('');
+ h+=wires.map(w=>{const d=wd(w);return`<g data-w="${w.id}"><path class="hit" d="${d}"/>`+(selW==w.id?`<path d="${d}" fill="none" stroke="#f59e0b" stroke-width="${WW(w)+5}" opacity=".5"/>`:'')+(running&&w.live?`<path d="${d}" fill="none" stroke="#fde68a" stroke-width="${WW(w)+5}" opacity=".6"/>`:'')+`<path d="${d}" fill="none" stroke="${WC[w.k]}" stroke-width="${WW(w)}" pointer-events="none"/>`+(w.k=='E'?`<path d="${d}" fill="none" stroke="#facc15" stroke-width="${WW(w)}" stroke-dasharray="8 8" pointer-events="none"/>`:'')+(w.flow?`<path class="flow" d="${d}" pointer-events="none"/>`:'')+'</g>'}).join('');
  h+=comps.map(drawC).join('')+marksSVG()+'<path id="pv" fill="none" stroke="#6b7280" stroke-width="3" stroke-dasharray="4 4" pointer-events="none"/><circle id="snap" r="17" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="3" display="none" pointer-events="none"/>';
  $('#vp').innerHTML=h;applyView()}
 function applyView(){$('#vp').setAttribute('transform',`translate(${view.x} ${view.y}) scale(${view.z})`);$('#zl').textContent=Math.round(view.z*100)+'%'}
@@ -1129,6 +1130,26 @@ Object.assign(ACT,{del,selmode(){selMode=!selMode;if(!selMode&&!msel.size){}log(
 const _after=after;after=function(){_after();proPanel();lessonTick()};
 Object.assign(KW,{src3:'three phase 3 phase 400v supply',motor3:'three phase motor 3 phase',note:'text label annotation comment'});
 pal(true);ui();render();proPanel();lessonCard();
+/* ---------- short circuit link (compressed, one line) ---------- */
+function circuitCompact(){const idx={};comps.forEach((c,i)=>idx[c.id]=i);
+ return JSON.stringify({v:1,c:comps.map(c=>{const a=[c.type,Math.round(c.x),Math.round(c.y)],o={};if(c.rot)o.r=c.rot;if(JSON.stringify(c.s)!=JSON.stringify(TY[c.type].s))o.s=c.s;if(c.label)o.l=c.label;if(c.mode)o.m=c.mode;return Object.keys(o).length?a.concat([o]):a}),
+  w:wires.map(w=>{const a=w.a.split(':'),b=w.b.split(':'),r=[idx[a[0]],a[1],idx[b[0]],b[1],w.k];if(w.sz)r.push(w.sz);return r}).filter(r=>r[0]!=null&&r[2]!=null)})}
+const b64u=u=>{let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const unb64u=t=>{const s=atob(t.replace(/-/g,'+').replace(/_/g,'/')),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+async function circuitCode(){const raw=new TextEncoder().encode(circuitCompact());
+ if(typeof CompressionStream=='function'){try{const z=new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());return '1'+b64u(z)}catch(e){}}
+ return '0'+b64u(raw)}
+async function circuitLink(){const base=location.protocol.startsWith('http')?location.origin+location.pathname:location.href.split('#')[0];return base+'#c='+await circuitCode()}
+async function loadCode(code){try{let u=unb64u(code.slice(1));if(code[0]=='1')u=new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+ const o=JSON.parse(new TextDecoder().decode(u));if(!o||!Array.isArray(o.c)||!Array.isArray(o.w))throw 0;
+ const cs=o.c.map((a,i)=>({id:'c'+(i+1),type:a[0],x:a[1],y:a[2],rot:(a[3]&&a[3].r)||0,mode:(a[3]&&a[3].m)||null,s:(a[3]&&a[3].s)||{},...(a[3]&&a[3].l?{label:a[3].l}:{})})),
+  ws=o.w.map((r,i)=>({id:'w'+(i+1),a:'c'+(r[0]+1)+':'+r[1],b:'c'+(r[2]+1)+':'+r[3],k:r[4],...(r[5]?{sz:r[5]}:{})}));
+ return importText(JSON.stringify({app:'ElecSimulator',version:2,comps:cs,wires:ws,nid:Math.max(cs.length,ws.length)+2}))}catch(e){log('That circuit link could not be opened');return false}}
+function openHashLink(){if(location.hash.startsWith('#c=')){const c=location.hash.slice(3);loadCode(c).then(()=>{try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}})}}
+const _exportUI2=exportUI;exportUI=function(){_exportUI2();const m=document.querySelector('#mdb .mbtns');if(m)m.insertAdjacentHTML('afterbegin','<button class="big" data-ex="link">🔗 Copy short link</button>')};
+const _exAct2=exAct;exAct=async function(a){if(a=='link'){try{const l=await circuitLink();try{await navigator.clipboard.writeText(l);say('✔ Link copied ('+l.length+' characters) – paste it in a message')}catch(e){say(l)}}catch(e){say('Could not make the link.',1)}return}return _exAct2(a)};
+addEventListener('hashchange',openHashLink);openHashLink();
+
 
 </script><script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 </body></html>

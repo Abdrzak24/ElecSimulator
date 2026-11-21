@@ -568,7 +568,7 @@ Object.entries(GANG).forEach(([k,n])=>{const sp=n==2?40:n==3?30:24,ys=[...Array(
   sch:c=>{const g=gg(c);return P('M-40 0H-14')+ys.map((y,i)=>P(`M14 ${y}H40M-14 0L${g[i]?'14 '+y:'12 '+(y*.6-6)}`)+dot(14,y)).join('')+dot(-14,0)},
   real:c=>{const g=gg(c);return `<rect x="${-pw/2}" y="${-H/2+4}" width="${pw}" height="${H-8}" rx="6" fill="#f8f7f2" stroke="#9ca3af" stroke-width="2"/>`+ys.map((_,i)=>{const x=-pw/2+4+i*rw,y=-H/2+10,h=H-20;return `<rect x="${x}" y="${y}" width="${rw-2}" height="${h}" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="${x}" y="${g[i]?y:y+h/2}" width="${rw-2}" height="${h/2}" rx="3" fill="#6b7280" opacity=".55"/>`}).join('')}};
  ACTS[k]=c=>gg(c).map((v,i)=>['Gang '+(i+1)+' '+(v?'OFF':'ON'),c=>{gg(c)[i]^=1}]);NOCLICK[k]=1});
-const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='';
+const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='252634454547';
 function openFB(){$('#fv').textContent=APP_VERSION;$('#fd').showModal()}
 async function sendFB(){const m=$('#fm').value.trim(),S=t=>{$('#fs').textContent=t};if(!m){S('Please write your feedback first.');return}
  const o={name:$('#fn').value,contact:$('#fc').value,type:$('#ft').value,part:$('#fa').value,rating:$('#fr').value,message:m,version:APP_VERSION,screen:innerWidth+'x'+innerHeight,device:navigator.userAgent,time:new Date().toISOString()};

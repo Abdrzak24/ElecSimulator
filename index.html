@@ -655,7 +655,7 @@ svg.onpointerdown=e=>{document.querySelectorAll('.panel.open').forEach(x=>x.clas
  if(ptrs.size>2)return;
  if(ptrs.size==2){if(drag&&drag.c&&drag.c.type=='pb'){drag.c.s.on=0;drag=null;after()}drag=null;svg.classList.remove('wiring');const g=g2();gm={pd:g.d,pmx:g.mx,pmy:g.my,sp:0,sz:0,mode:null};render();return}
  const t=e.target,tm=t.closest('[data-t]'),cm=t.closest('[data-id]'),wm=t.closest('[data-w]'),tid=tm?tm.dataset.t:(probe?null:nearTerm(e,TH0));
- if(tid&&probe)doProbe(tid);else if(tid){drag={k:'wire',from:tid};sel=selW=null;svg.classList.add('wiring');ui()}
+ if(tid&&probe)doProbe(tid);else if(tid){drag={k:'wire',from:tid,sx:e.clientX,sy:e.clientY,cm:tm?null:(cm?cm.dataset.id:null)};sel=selW=null;svg.classList.add('wiring');ui()}
  else if(cm){const c=byId(cm.dataset.id);sel=c.id;selW=null;drag={k:moveOn?'move':'pan',c,sx:e.clientX,sy:e.clientY,ox:c.x,oy:c.y,vx:view.x,vy:view.y,moved:0};if(c.type=='pb'){c.s.on=1;sim()}render();ui()}
  else if(wm){selW=wm.dataset.w;sel=null;drag=null;render();ui()}
  else{if(sel||selW){sel=selW=null;render();ui()}drag={k:'pan',sx:e.clientX,sy:e.clientY,vx:view.x,vy:view.y}}};
@@ -672,7 +672,7 @@ svg.onpointermove=e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e
 svg.onpointerup=svg.onpointercancel=e=>{ptrs.delete(e.pointerId);pd=0;if(ptrs.size<2)gm=null;if(!drag)return;const d=drag;drag=null;
  if(d.c&&d.c.type=='pb'){d.c.s.on=0;after()}else if(d.k=='move'&&!d.moved)toggle(d.c,e);
  else if(d.k=='move')after();
- else if(d.k=='wire'){svg.classList.remove('wiring');const el=document.elementFromPoint(e.clientX,e.clientY),dt=el&&el.closest&&el.closest('[data-t]'),to=nearTerm(e,TH1,d.from)||(dt&&dt.dataset.t!=d.from?dt.dataset.t:null);
+ else if(d.k=='wire'){svg.classList.remove('wiring');if(Math.hypot(e.clientX-d.sx,e.clientY-d.sy)<6){const tc=d.cm&&byId(d.cm);if(tc){sel=tc.id;selW=null;render();ui();toggle(tc,e)}else render();return}const el=document.elementFromPoint(e.clientX,e.clientY),dt=el&&el.closest&&el.closest('[data-t]'),to=nearTerm(e,TH1,d.from)||(dt&&dt.dataset.t!=d.from?dt.dataset.t:null);
   if(to&&!wires.some(w=>(w.a==d.from&&w.b==to)||(w.b==d.from&&w.a==to))){push();wires.push({id:'w'+nid++,a:d.from,b:to,k:wk});after()}else render()}};
 addEventListener('keydown',e=>{if(['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName)||document.querySelector('dialog[open]'))return;const k=e.key.toLowerCase();
  if(k=='delete'||k=='backspace')del();else if((e.ctrlKey||e.metaKey)&&k=='z'){e.preventDefault();e.shiftKey?doRedo():doUndo()}else if((e.ctrlKey||e.metaKey)&&k=='y')doRedo();else if(k=='r')ACT.rot()});

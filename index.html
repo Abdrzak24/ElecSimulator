@@ -177,6 +177,10 @@ body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var
 #st{max-width:30vw}
 #ctx{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 20px);width:max-content;border:1px solid var(--bd);border-radius:14px;box-shadow:0 6px 22px #0004;z-index:12;padding:6px 10px;min-height:0;flex-wrap:wrap;justify-content:center}
 #ctx:empty,body:has(.panel.open) #ctx{display:none}
+#ctx{gap:2px;padding:3px;border-radius:999px;background:color-mix(in srgb,var(--pn) 82%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 4px 16px #0003;font-size:12px}
+#ctx button{min-height:28px;min-width:0;padding:0 14px;border:0;border-radius:999px;background:transparent;font-size:12px;font-weight:600;letter-spacing:.2px}
+#ctx button:hover,#ctx button:active{background:var(--ac);color:#fff}
+#ctx b{margin:0 4px 0 10px;font-size:12px;font-weight:600;color:var(--mut)}
 </style></head><body>
 <div id="app">
 <header id="tb">
@@ -604,7 +608,7 @@ function ui(){
  $('#play').disabled=running;$('#stop').disabled=!running;$('#fpl').disabled=running;$('#fst').disabled=!running;$('#bm').classList.toggle('on',moveOn);$('#bg').classList.toggle('on',grid);$('#bp').classList.toggle('on',probe);
  ['L','N','E','P','M'].forEach(k=>{const on=wk==k;[$('#w'+k),$('#fw'+k)].forEach(b=>{b.style.outline='';b.classList.toggle('sel',on);b.setAttribute('aria-pressed',on)})});
  const x=$('#ctx'),c=sel&&byId(sel);acts=[];
- if(c){acts=(ACTS[c.type]?ACTS[c.type](c):[]);x.innerHTML=`<b>${TY[c.type].n}</b>`+acts.map((a,i)=>`<button data-i="${i}">${a[0]}</button>`).join('')+`<select id="cm" title="Display mode for this component only"><option value="">Display: Auto (global)</option><option value="real">Realistic</option><option value="sch">Schematic</option><option value="hyb">Hybrid</option></select>`+(('rate' in c.s||c.type=='db')?`<select id="cr" title="Rating (A)">${rateList(c).map(v=>`<option${v==(c.s.rate||32)?' selected':''}>${v}</option>`).join('')}</select> A`:'');$('#cm').value=c.mode||''}
+ if(c){acts=(ACTS[c.type]?ACTS[c.type](c):[]);x.innerHTML=acts.map((a,i)=>`<button data-i="${i}">${a[0]}</button>`).join('')}
  else if(selW){const w=wires.find(w=>w.id==selW);x.innerHTML=`<b>${{L:'Live',N:'Neutral',E:'Earth'}[w.k]} wire</b><button data-i="w">Delete wire</button>`}
  else x.innerHTML='<span class="hint" style="color:var(--mut)">Tap a component to add it, or drag it onto the canvas · drag from a terminal dot to wire · tap switches to toggle · press ▶ Play</span>'}
 function after(){sim();render();ui();mkUI();pal(false);try{localStorage.setItem('hes',snapS())}catch(e){}}

@@ -139,36 +139,76 @@ button.sm{min-height:28px;font-size:12px;padding:0 8px}
 .fdg{display:flex;flex-direction:column;gap:8px;width:min(86vw,420px);max-height:72vh;overflow:auto}.fdg label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
 .fdg input,.fdg select,.fdg textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;min-height:0}
 #fm{width:100%;height:110px;resize:vertical;box-sizing:border-box}.fdg .fck{flex-direction:row;align-items:center;gap:6px;font-size:13px;color:var(--ink)}.fdg .fck input{width:auto}
+
+/* ===== minimal interface ===== */
+:root{--tbh:54px}
+body #tb{flex-direction:row!important;align-items:center!important;padding:4px 8px!important;gap:6px!important;overflow:visible!important;white-space:nowrap;position:relative;z-index:20}
+#tb1{display:flex!important;flex:1;align-items:center;gap:2px;flex-wrap:nowrap!important;min-width:0}
+#tb2{display:none!important}.sp{flex:1}
+.brand span{display:none}.brand{margin-right:2px}
+@media(min-width:821px){.brand span{display:inline}}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:0!important;background:none!important;font-size:11px!important;font-weight:500;min-height:44px!important;min-width:54px!important;padding:2px 6px!important;border-radius:10px}
+.tab:active{background:var(--bg)!important}.tab svg{width:24px;height:24px}
+#wsw{display:block;width:30px;height:9px;border-radius:5px;background:#dc2626;margin:7px 0 6px;box-shadow:inset 0 -2px 0 #0003}
+#st{font-size:12px;color:var(--mut);margin-right:6px;overflow:hidden;text-overflow:ellipsis}
+body #play,body #stop{border-radius:22px!important;min-height:40px!important;padding:0 18px!important;font-size:15px!important;box-shadow:0 2px 6px #0003}
+#play:disabled,#stop:disabled{display:none!important}
+.pop{position:absolute;z-index:30;background:var(--pn);border:1px solid var(--bd);border-radius:14px;box-shadow:0 8px 28px #0005;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:200px}
+#wm{left:8px;top:58px}#sm{right:64px;top:58px;max-height:calc(100vh - 80px);overflow:auto}
+#wm .wk,#sm button{width:auto!important;display:flex;align-items:center;justify-content:flex-start;padding:0 14px;border-radius:10px;font-size:14px;min-height:42px;transform:none}
+#wm .wk.sel{transform:none;box-shadow:0 0 0 3px var(--pn),0 0 0 5px var(--ink)}#wm .wk:not(.sel){opacity:1}#wm .wk::after{display:none}
+#sm .row{display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:14px}
+#sm button.on{background:var(--bg);color:var(--ink);border-color:var(--ac);font-weight:600}
+body #fl{position:absolute;top:10px;right:10px;left:auto;display:flex;flex-direction:column;flex-wrap:nowrap;gap:0;width:46px;background:var(--pn);border:1px solid var(--bd);border-radius:14px;box-shadow:0 4px 18px #0003;padding:2px;pointer-events:auto;z-index:6}
+#ftools{display:flex;flex-direction:column}
+body #fl button{border:0;background:none;min-width:42px;width:42px;min-height:40px;height:40px;padding:0;font-size:19px;border-radius:10px;opacity:1;box-shadow:none;pointer-events:auto}
+body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var(--ink)}
+#ftog{transition:transform .2s;font-size:20px!important}#fl.min #ftools{display:none}#fl.min #ftog{transform:rotate(180deg)}
+#fl #bm.lk{color:#16a34a}
+#sys{position:absolute;top:12px;right:66px;z-index:5;background:#6b728099;color:#fff;font-weight:600;font-size:11px;padding:4px 9px;border-radius:7px;pointer-events:none;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+#ctx:has(>.hint),.hint{display:none!important}
+@media(min-width:821px) and (min-height:521px){
+ main{grid-template-columns:1fr!important}
+ .panel{position:fixed;top:var(--tbh);bottom:0;width:300px;z-index:15;box-shadow:0 0 24px #0004;transition:transform .2s;max-height:none}
+ #left{left:0;transform:translateX(-105%)}#right{right:0;transform:translateX(105%)}.panel.open{transform:none}
+}
+@media(max-width:820px),(max-height:520px){body #tb{flex-direction:row!important}.tab{min-width:48px!important}}
+#st{max-width:30vw}
+#ctx{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 20px);width:max-content;border:1px solid var(--bd);border-radius:14px;box-shadow:0 6px 22px #0004;z-index:12;padding:6px 10px;min-height:0;flex-wrap:wrap;justify-content:center}
+#ctx:empty,body:has(.panel.open) #ctx{display:none}
 </style></head><body>
 <div id="app">
 <header id="tb">
  <div class="brand" title="ElecSimulator"><img src="brand-32.png" srcset="brand-32.png 1x, brand-64.png 2x, brand-96.png 3x" alt="" width="30" height="30"><span>ElecSimulator</span></div>
  <div id="tb1">
-  <button id="play" data-a="play" title="Start simulation">▶<span class="lab"> Play</span></button>
-  <button id="stop" data-a="stop" title="Stop simulation">■<span class="lab"> Stop</span></button>
-  <button id="bu" data-a="undo" title="Undo">↶</button><button id="br" data-a="redo" title="Redo">↷</button>
-  <button id="bro" data-a="rot" title="Rotate selected">⟳</button><button id="bd" data-a="del" title="Delete selected">🗑</button>
-  <button id="more" data-a="more" title="More tools">⋯</button>
-  <span class="brk"></span>
-  <button data-a="zout" title="Zoom out">−</button><span id="zl">100%</span><button data-a="zin" title="Zoom in">+</button><button data-a="fit" title="Fit circuit to screen">⤢</button>
-  <button class="mob" data-p="left">Components</button><button class="mob" data-p="right">Meters</button><span id="st"></span>
+  <button class="tab" id="bwire" data-a="wmenu" title="Choose the wire type"><i id="wsw"></i><span>Wires ▾</span></button>
+  <button class="tab" id="bcomp" data-p="left" title="Add components"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="2" fill="currentColor"/><rect x="14" y="4" width="5" height="16" rx="2" fill="currentColor" opacity=".5"/></svg><span>Comps ▾</span></button>
+  <button class="tab" id="bsave" data-a="save" title="Save / export the circuit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 3v6h7V3M8 21v-7h8v7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Save</span></button>
+  <span class="sp"></span><span id="st"></span>
+  <button id="play" data-a="play" title="Start simulation">▶ Run</button>
+  <button id="stop" data-a="stop" title="Stop simulation">■ Stop</button>
  </div>
- <div id="tb2">
-  <button id="bm" data-a="move" title="Enable/disable moving components">✥ Move</button>
+ <div id="wm" class="pop" hidden><button class="wk" data-a="wL" id="wL" style="background:#dc2626" title="Live wire">L · Live</button><button class="wk" data-a="wN" id="wN" style="background:#2563eb" title="Neutral wire">N · Neutral</button><button class="wk" data-a="wE" id="wE" style="background:#16a34a" title="Earth wire">E · Earth</button><button class="wk" data-a="wP" id="wP" style="background:#ea580c" title="DC + wire">+ · DC positive</button><button class="wk" data-a="wM" id="wM" style="background:#111827" title="DC − wire">− · DC negative</button></div>
+ <div id="sm" class="pop" hidden>
+  <label class="row">Display <select id="gm" title="Display mode for all components"><option value="real">Realistic</option><option value="sch">Schematic</option><option value="hyb">Hybrid</option></select></label>
   <button id="bg" data-a="grid" title="Toggle grid">▦ Grid</button>
-  <button data-a="dup" title="Duplicate selected">⧉ Copy</button>
-  <button class="wk" data-a="wL" id="wL" style="background:#dc2626" title="Live wire">L</button>
-  <button class="wk" data-a="wN" id="wN" style="background:#2563eb" title="Neutral wire">N</button>
-  <button class="wk" data-a="wE" id="wE" style="background:#16a34a" title="Earth wire">E</button><button class="wk" data-a="wP" id="wP" style="background:#ea580c" title="DC + wire">+</button><button class="wk" data-a="wM" id="wM" style="background:#111827" title="DC − wire">−</button>
-  <select id="gm" title="Display mode for all components"><option value="real">Realistic</option><option value="sch">Schematic</option><option value="hyb">Hybrid</option></select>
+  <button data-a="theme">◐ Light / dark</button>
+  <button data-a="dup" title="Duplicate the selected component">⧉ Copy selected</button>
+  <button data-p="right">📊 Meters &amp; solar</button>
+  <button data-a="load">⤒ Import circuit</button>
+  <button data-a="clear">✕ Clear all</button>
+ </div>
+ <div id="legacy" hidden>
+  <button id="more" data-a="more"></button><span id="zl">100%</span>
+  <button id="fpl" data-a="play"></button><button id="fst" data-a="stop"></button>
+  <button id="bp" data-a="probe"></button><button data-a="fb"></button><button data-a="demo"></button><button data-a="check"></button>
   <select id="ex" title="Learning examples"><option value="">Examples…</option><option value="stair">Staircase 2-way light</option><option value="hall">Hallway intermediate</option><option value="kitchen">Kitchen RCD + socket</option><option value="garage">Relay-controlled motor</option></select>
-  <button data-a="fb">💬 Feedback</button><button data-a="theme">◐ Theme</button><button data-a="demo">Demo</button><button id="bp" data-a="probe" title="Multimeter probe">🔍 Probe</button><button data-a="check">✓ Check</button><button data-a="save">Export</button><button data-a="load">Import</button><button data-a="clear">Clear</button>
  </div>
 </header>
 <div id="ctx"></div>
 <main>
  <aside id="left" class="panel"><div id="phead"><h3>Components</h3><input id="ps" type="search" placeholder="Search components…" autocomplete="off" aria-label="Search components"><div id="ptools"><button id="pm" data-pa="multi" title="Pick several components, then add them all at once">☐ Select several</button><span class="pt">or drag one onto the canvas</span></div><div id="padd" hidden><button id="paddgo" data-pa="add">Add <b id="pcount">0</b> selected</button><button data-pa="clr">Clear</button></div></div><div id="pnone" hidden>No components match your search.</div><div id="pal"></div></aside>
- <div id="cv"><svg id="svg"><g id="vp"></g></svg><div id="pbar" hidden></div><div id="fw" aria-label="Wire type"><button class="wk" id="fwL" data-a="wL" style="background:#dc2626" title="Live wire">L</button><button class="wk" id="fwN" data-a="wN" style="background:#2563eb" title="Neutral wire">N</button><button class="wk" id="fwE" data-a="wE" style="background:#16a34a" title="Earth wire">E</button><button class="wk" id="fwP" data-a="wP" style="background:#ea580c" title="DC + wire">+</button><button class="wk" id="fwM" data-a="wM" style="background:#111827" title="DC − wire">−</button></div><div id="fl"><button data-a="full" title="Full screen / show toolbar">⛶</button><button class="fp" id="fpl" data-a="play">▶</button><button class="fp" id="fst" data-a="stop">■</button><button class="fp" data-a="undo">↶</button><button class="fp" data-a="rot">⟳</button><button class="fp" data-a="del">🗑</button><button class="fp" data-p="left">Components</button><button class="fp" data-p="right">Meters</button></div></div>
+ <div id="cv"><svg id="svg"><g id="vp"></g></svg><div id="pbar" hidden></div><div id="fw" aria-label="Wire type"><button class="wk" id="fwL" data-a="wL" style="background:#dc2626" title="Live wire">L</button><button class="wk" id="fwN" data-a="wN" style="background:#2563eb" title="Neutral wire">N</button><button class="wk" id="fwE" data-a="wE" style="background:#16a34a" title="Earth wire">E</button><button class="wk" id="fwP" data-a="wP" style="background:#ea580c" title="DC + wire">+</button><button class="wk" id="fwM" data-a="wM" style="background:#111827" title="DC − wire">−</button></div><div id="fl"><button id="ftog" data-a="ftog" title="Hide / show tools">⌃</button><div id="ftools"><button id="bu" data-a="undo" title="Undo">↶</button><button id="br" data-a="redo" title="Redo">↷</button><button id="bro" data-a="rot" title="Rotate selected">⟳</button><button id="bd" data-a="del" title="Delete selected">🗑</button><button data-a="zout" title="Zoom out">−</button><button data-a="zin" title="Zoom in">+</button><button data-a="fit" title="Fit circuit to screen">⤢</button><button id="bm" data-a="move" title="Lock / unlock moving parts">🔓</button><button id="bset" data-a="smenu" title="Settings">⚙</button></div></div><div id="sys"></div></div>
  <aside id="right" class="panel">
   <h3>Instruments</h3>
   <div class="mt"><small>Supply</small><select id="sup"><option value="230">230 V / 50 Hz</option><option value="120">120 V / 60 Hz</option></select></div>
@@ -176,7 +216,7 @@ button.sm{min-height:28px;font-size:12px;padding:0 8px}
   <div class="mt"><small>Ammeter</small><span class="v" id="ii">0.00</span> A</div>
   <div class="mt"><small>Wattmeter</small><span class="v" id="ip">0</span> W<small id="ie">0.00 Wh</small></div>
   <div class="mt"><small>Solar &amp; battery</small>Sun <input id="sun" type="range" min="0" max="100" value="80" style="width:100%"><br>PV <b id="spv">0</b> W · DC load <b id="sdc">0</b> W<br>Battery <b id="ssoc">–</b><br>Time speed <select id="spd"><option value="1">1×</option><option value="60" selected>60×</option><option value="600">600×</option></select></div><div class="mt"><small>Oscilloscope (V yellow, I cyan)</small><canvas id="scope" width="440" height="200"></canvas></div>
-  <div class="mt"><small>Multimeter (🔍 Probe, tap two terminals)</small><div id="mm">–</div></div><h3>Event log</h3><div id="log"></div>
+  <div class="mt"><small>Multimeter</small><div id="mm">–</div></div><h3>Event log</h3><div id="log"></div>
  </aside>
 </main>
 <dialog id="fd"><h3 style="margin:0 0 8px">💬 Send feedback <small id="fv" style="color:var(--mut);font-weight:400"></small></h3>
@@ -557,6 +597,8 @@ function render(){LN=lanes();CT={};wires.forEach(w=>{CT[w.a]=CT[w.b]=WC[w.k]||'#
  $('#vp').innerHTML=h;applyView()}
 function applyView(){$('#vp').setAttribute('transform',`translate(${view.x} ${view.y}) scale(${view.z})`);$('#zl').textContent=Math.round(view.z*100)+'%'}
 function ui(){
+ const sw=$('#wsw');if(sw)sw.style.background={L:'#dc2626',N:'#2563eb',E:'#16a34a',P:'#ea580c',M:'#111827'}[wk];
+ const bm=$('#bm');bm.textContent=moveOn?'🔓':'🔒';bm.classList.toggle('lk',!moveOn);const sy=$('#sys');if(sy)sy.textContent=SUP.v+' V · '+SUP.f+' Hz';
  $('#bu').disabled=!undo.length;$('#br').disabled=!redo.length;$('#bro').disabled=!sel;$('#bd').disabled=!sel&&!selW;
  $('#play').disabled=running;$('#stop').disabled=!running;$('#fpl').disabled=running;$('#fst').disabled=!running;$('#bm').classList.toggle('on',moveOn);$('#bg').classList.toggle('on',grid);$('#bp').classList.toggle('on',probe);
  ['L','N','E','P','M'].forEach(k=>{const on=wk==k;[$('#w'+k),$('#fw'+k)].forEach(b=>{b.style.outline='';b.classList.toggle('sel',on);b.setAttribute('aria-pressed',on)})});
@@ -585,7 +627,9 @@ function demo(){push();comps=[];wires=[];sel=selW=null;nid=1;
  after();fit();log('Demo loaded: source → MCB → switch → lamp + LED')}
 const ACT={play(){running=true;log('Simulation started');after()},stop(){running=false;log('Simulation stopped');after()},undo:()=>doUndo(),redo:()=>doRedo(),
  move(){moveOn=!moveOn;ui()},rot(){const c=byId(sel);if(c){push();c.rot=(c.rot+1)%4;after()}},del,zin(){const r=$('#svg').getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1.2)},zout(){const r=$('#svg').getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,1/1.2)},
- grid(){grid=!grid;render();ui()},demo,save(){exportUI()},load(){importUI()},check,probe(){probe=!probe;pr=[];ui()},fb(){openFB()},more(){$('#tb').classList.toggle('open')},full(){document.body.classList.toggle('full');document.querySelectorAll('.panel.open').forEach(x=>x.classList.remove('open'));setTimeout(fit,60)},fit(){fit()},dup(){const c=byId(sel);if(c){push();const n=clone(c);n.id='c'+nid++;n.x+=45;n.y+=45;comps.push(n);sel=n.id;after()}},clear(){clearUI()},wL(){wk='L';ui()},wN(){wk='N';ui()},wE(){wk='E';ui()},wP(){wk='P';ui()},wM(){wk='M';ui()},theme(){const d=document.documentElement,dk=matchMedia('(prefers-color-scheme:dark)').matches,cur=d.dataset.theme||(dk?'dark':'light');d.dataset.theme=cur=='dark'?'light':'dark';try{localStorage.setItem('hth',d.dataset.theme)}catch(e){}}};
+ grid(){grid=!grid;render();ui()},demo,save(){exportUI()},load(){importUI()},check,probe(){probe=!probe;pr=[];ui()},fb(){openFB()},more(){$('#tb').classList.toggle('open')},full(){document.body.classList.toggle('full');document.querySelectorAll('.panel.open').forEach(x=>x.classList.remove('open'));setTimeout(fit,60)},fit(){fit()},wmenu(){togglePop('wm')},smenu(){togglePop('sm')},ftog(){$('#fl').classList.toggle('min')},dup(){const c=byId(sel);if(c){push();const n=clone(c);n.id='c'+nid++;n.x+=45;n.y+=45;comps.push(n);sel=n.id;after()}},clear(){clearUI()},wL(){wk='L';ui()},wN(){wk='N';ui()},wE(){wk='E';ui()},wP(){wk='P';ui()},wM(){wk='M';ui()},theme(){const d=document.documentElement,dk=matchMedia('(prefers-color-scheme:dark)').matches,cur=d.dataset.theme||(dk?'dark':'light');d.dataset.theme=cur=='dark'?'light':'dark';try{localStorage.setItem('hth',d.dataset.theme)}catch(e){}}};
+function togglePop(id){['wm','sm'].forEach(x=>{const e=$('#'+x);e.hidden=x==id?!e.hidden:true})}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest('#wm,#sm,[data-a=wmenu],[data-a=smenu]'))['wm','sm'].forEach(x=>$('#'+x).hidden=true);else if(t.closest('#wm [data-a],#sm [data-a],#sm [data-p]'))['wm','sm'].forEach(x=>$('#'+x).hidden=true)});
 function doUndo(){if(!undo.length)return;redo.push(snapS());restore(undo.pop())}
 function doRedo(){if(!redo.length)return;undo.push(snapS());restore(redo.pop())}
 /* ---------- events ---------- */

@@ -483,12 +483,13 @@ function calc(mark){
   ['L1','L2','L3'].forEach(a=>out.push(m3(a,'N',SUP.v,0)));[['L1','L2'],['L2','L3'],['L3','L1']].forEach(([a,b])=>out.push(m3(a,b,PV3(),1)))}
  for(let pass=0;pass<4;pass++)comps.forEach(t=>{if(!TRN[t.type]||t.s.fault||out.some(o=>o.c==t))return;const pl=f(t.id+':PL'),pn=f(t.id+':PN'),fd=out.find(o=>!o.short&&((o.nL==pl&&o.nN==pn)||(o.nL==pn&&o.nN==pl)));
   if(fd){const o=mkO(t,fd.V*(t.type=='tup'?t.s.ratio:1/t.s.ratio));o.feed=fd;o.tr=1;out.push(o)}});
+ const NS=typeof netSolve=='function'?netSolve(f,out,s3,mark):null;
  out.forEach(o=>{if(o.short)return;const lo=(d,a,b)=>{const x=f(d.id+':'+a),y=f(d.id+':'+b);return(x==o.nL&&y==o.nN)||(x==o.nN&&y==o.nL)},fv=o.V/SUP.v;
-  comps.forEach(d=>{let p=0;if(LOADS[d.type]&&!d.s.dead&&lo(d,'A','B')){p=LOADS[d.type];
+  comps.forEach(d=>{let p=0;const ne=NS&&NS.m.get(d.id);if(ne){const fx=ne.v/SUP.v;p=ne.p;if(fx<.4){p=0;if(mark)d.low=1}else if(fx<.9&&mark)d.low=1;if(d.type=='sock'&&mark)d.hot=1}else if(LOADS[d.type]&&!d.s.dead&&lo(d,'A','B')){p=LOADS[d.type];
     if(fv>1.4){p=0;if(mark){d.s.dead=1;log('⚠ '+TY[d.type].n+' burned out – '+Math.round(o.V)+' V on a '+SUP.v+' V load');if(typeof WHYSET=='function')WHYSET(d.id,'err','Burned out: it is built for '+SUP.v+' V but got '+Math.round(o.V)+' V'+(o.ll?' (it was wired between two phases)':'')+'. Use Repair, and fix the wiring first.')}}
     else if(fv<.4){p=0;if(mark)d.low=1}else if(fv<.9&&mark)d.low=1}
-   if(d.type=='sock'&&lo(d,'L','N')){if(mark)d.hot=1;if(d.s.plug)p=(fv>1.4||fv<.4)?0:1200}
-   if(p){o.P+=p;PL.push([d.id,p,o.V,0]);if(mark&&LOADS[d.type])d.lit=1}})});
+   if(d.type=='sock'&&!ne&&lo(d,'L','N')){if(mark)d.hot=1;if(d.s.plug)p=(fv>1.4||fv<.4)?0:1200}
+   if(p){o.P+=p;PL.push([d.id,p,ne?ne.v:o.V,0,0,ne?SUP.v:0]);if(mark&&LOADS[d.type])d.lit=1}})});
  if(s3){const ph=out.filter(o=>o.ph),pn=ph.map(o=>o.nL);
   comps.forEach(d=>{if(d.type!='motor3'||d.s.dead)return;const n=['U','V','W'].map(k=>f(d.id+':'+k)),ok=n.every(x=>pn.includes(x))&&new Set(n).size==3&&!ph.some(o=>o.short);
    if(ok){ph.forEach(o=>o.P+=LOADS.motor3/3);PL.push([d.id,LOADS.motor3,PV3(),1]);if(mark)d.lit=1}
@@ -933,7 +934,7 @@ function proAnalyze(){PROW={};PROV={};if(!PRO||!running)return;
  const keep=wires,vd={};
  keep.forEach(w=>{if(w.k=='E')return;let r1=null;wires=keep.filter(x=>x!==w);try{r1=calc(0)}catch(e){}finally{wires=keep}
   const len=wlen(w),sz=wsz(w),R=RHO*len/sz,lost=[];let I=0;
-  if(r1){const m=new Map(r1.pl.map(p=>[p[0],p[1]]));base.pl.forEach(([id,p,V,f])=>{const d=p-(m.get(id)||0);if(d>0){I+=f?d/(1.7320508*V):d/V;lost.push([id,V,f])}})}
+  if(r1){const m=new Map(r1.pl.map(p=>[p[0],p[1]]));base.pl.forEach(([id,p,V,f,dc,Vn])=>{const d=p-(m.get(id)||0);if(d>0){I+=f?d/(1.7320508*V):d/V;lost.push([id,Vn||V,f])}})}
   const amp=AMP[sz]||27;PROW[w.id]={i:I,len,R,sz,amp,util:I/amp};
   lost.forEach(([id,V,f])=>{const o=vd[id]||(vd[id]={dv:0,V});o.dv+=I*R*(f?.57735:1)})});
  Object.entries(vd).forEach(([id,o])=>{PROV[id]={dv:o.dv,V:o.V,pct:100*o.dv/o.V}})}
@@ -1181,6 +1182,8 @@ function noPower(c){if(comps.some(x=>['tup','tdn'].includes(x.type)))return null
  for(const d of offs){const s=d.s,old=JSON.stringify(s);let ok=false;
   try{if('blown' in s)s.blown=0;if(s.on===0)s.on=1;if(Array.isArray(s.g))s.g=s.g.map(()=>1);ok=calc(0).pl.some(p=>p[0]==c.id)}finally{Object.keys(s).forEach(k=>delete s[k]);Object.assign(s,JSON.parse(old))}
   if(ok){const n=TY[d.type].n;return SWT.includes(d.type)?{sev:'info',t:`No power: the ${n} is OFF. Tap it to turn it ON.`}:'blown' in s?{sev:'warn',t:'No power: the fuse has blown. Replace it.'}:{sev:'warn',t:`No power: the ${n} is OFF (tripped or switched off). Turn it ON.`}}}
+ if(!PRO){const mid=[a,b].find(n=>n!=L&&n!=N);if(mid&&comps.some(x=>x!==c&&LOADS[x.type]&&(f(x.id+':A')==mid||f(x.id+':B')==mid)))return{sev:'info',t:'This looks like a series circuit (parts one after another). Switch to Pro mode in the ⚙ menu to simulate it.'}}
+ if(PRO&&NSV[c.id]!=null&&(hasL||hasN)&&!(hasL&&hasN))return{sev:'warn',t:'No current flows: its chain is broken somewhere – check the wires and switches it is in series with.'}
  if(!hasL&&!hasN)return{sev:'warn',t:'No power: it is not connected to the supply yet. Draw a red live wire and a blue neutral wire to it.'};
  if(!hasL)return{sev:'warn',t:'No power: its live terminal is not connected to the red live wire from the source.'};
  if(!hasN)return{sev:'warn',t:'No power: live arrives, but the blue neutral wire is missing, so the circuit is not complete.'};
@@ -1190,6 +1193,7 @@ function whyNow(c){const w=WHY[c.id];if(w&&whyValid(c))return w;
  if(c.s.dead&&LOADS[c.type])return{sev:'err',t:'Not working: it is broken (open circuit). Use Repair to fix it.'};
  if(PROTT.has(c.type)&&protOff(c)&&c.type!='db')return{sev:'info',t:'Switched off. Turn it ON to restore the power.'};
  if(running&&c.type=='motor3'&&c.low)return{sev:'err',t:'Not running: only some of the 3 phases reach it. Check that L1, L2 and L3 are all connected.'};
+ if(PRO&&running&&NSV[c.id]!=null){const v=NSV[c.id],n=SUP.v;if(v>=.4*n&&v<.9*n)return{sev:'info',t:`Dim: it gets only ${Math.round(v)} V (not ${n} V) because it is in series with other parts, which share the voltage.`};if(v>.5&&v<.4*n)return{sev:'warn',t:`Almost off: only ${Math.round(v)} V reaches it because other parts in series use up the voltage.`}}
  if(running&&LOADS[c.type]&&!c.s.dead&&!c.lit){const d=noPower(c);if(d)return d}
  if(running&&LOADS[c.type]&&c.low)return{sev:'warn',t:'Running weak: the voltage reaching it is too low.'};
  if(PRO&&running&&PROV[c.id]&&PROV[c.id].pct>5)return{sev:'warn',t:`Voltage drop is ${PROV[c.id].pct.toFixed(1)} % (limit 5 %): the cable is too long or too thin. Pick a bigger cable size.`};
@@ -1198,6 +1202,38 @@ function whyNow(c){const w=WHY[c.id];if(w&&whyValid(c))return w;
 function extraWhy(){if(msel.size)return null;
  if(selW){const w=wires.find(w=>w.id==selW),p=w&&PROW[w.id];if(p&&p.util>1)return{sev:'err',t:`Cable overloaded: it carries ${p.i.toFixed(1)} A but a ${p.sz} mm² cable is rated about ${p.amp} A. Pick a bigger size.`};return null}
  if(!sel&&FLASH&&Date.now()<FLASH.until&&WHY[FLASH.id]&&byId(FLASH.id))return WHY[FLASH.id];return null}
+
+/* ---------- Pro: real circuit solver for series / mixed circuits ---------- */
+let NSV={};
+function netSolve(f,out,s3,mark){
+ if(mark)NSV={};
+ if(!PRO||s3||out.length!=1||out[0].short||out[0].tr)return null;
+ if(comps.some(c=>c.type=='tup'||c.type=='tdn'))return null;
+ const o=out[0],L=o.nL,N=o.nN,rs=[];
+ comps.forEach(d=>{let P=0,ta='A',tb='B';if(LOADS[d.type]&&!d.s.dead&&d.type!='motor3')P=LOADS[d.type];else if(d.type=='sock'&&d.s.plug){P=1200;ta='L';tb='N'}if(!P)return;
+  rs.push({id:d.id,a:f(d.id+':'+ta),b:f(d.id+':'+tb),R:SUP.v*SUP.v/P})});
+ if(!rs.some(r=>(r.a!=L&&r.a!=N)||(r.b!=L&&r.b!=N)))return null;   /* everything is straight across the supply: use the normal fast path */
+ const V={};V[L]=o.V;V[N]=0;
+ /* nodes reachable from the supply through loads */
+ const adj={};rs.forEach(r=>{(adj[r.a]=adj[r.a]||[]).push(r.b);(adj[r.b]=adj[r.b]||[]).push(r.a)});
+ const seen=new Set([L,N]),q=[L,N];while(q.length){const n=q.pop();(adj[n]||[]).forEach(m=>{if(!seen.has(m)){seen.add(m);q.push(m)}})}
+ const un=[...seen].filter(n=>n!=L&&n!=N),ix={};un.forEach((n,i)=>ix[n]=i);const m=un.length;
+ if(m){const A=Array.from({length:m},()=>new Array(m+1).fill(0));
+  rs.forEach(r=>{if(!seen.has(r.a)||!seen.has(r.b))return;const g=1/r.R,i=ix[r.a],j=ix[r.b];
+   if(i!=null){A[i][i]+=g;if(j!=null)A[i][j]-=g;else A[i][m]+=g*V[r.b]}
+   if(j!=null){A[j][j]+=g;if(i!=null)A[j][i]-=g;else A[j][m]+=g*V[r.a]}});
+  for(let c=0;c<m;c++){let p=c;for(let r=c+1;r<m;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;[A[c],A[p]]=[A[p],A[c]];const d=A[c][c]||1e-12;
+   for(let r=0;r<m;r++){if(r==c)continue;const k=A[r][c]/d;if(k)for(let j=c;j<=m;j++)A[r][j]-=k*A[c][j]}}
+  un.forEach((n,i)=>V[n]=A[i][m]/(A[i][i]||1e-12))}
+ const map=new Map();if(mark)NSV={};
+ rs.forEach(r=>{const ok=seen.has(r.a)&&seen.has(r.b),v=ok?Math.abs(V[r.a]-V[r.b]):0;map.set(r.id,{v,p:v*v/r.R});if(mark)NSV[r.id]=v});
+ return{m:map}}
+const _loadEx=loadEx;loadEx=function(k){if(k=='series'&&!PRO){setMode(1);log('Series circuits need Pro mode – switched on for you')}return _loadEx(k)};
+Object.assign(EX,{series:{n:'Example: two lamps in series (Pro)',p:[['src',90,270],['mcb',300,150],['lamp',560,150],['lamp',820,150]],w:[[0,'L',1,'A','L'],[1,'B',2,'A','L'],[2,'B',3,'A','L'],[3,'B',0,'N','N']]}});
+LESSONS.push({id:'series',t:'Series circuit',lv:'Pro',pro:1,d:'Two lamps one after the other share the voltage.',st:[
+ {t:'Add an AC Source, an MCB and two Lamps',ok:()=>$c('src').length&&$c('mcb').length&&$c('lamp').length>=2},
+ {t:'Wire the lamps one after the other: L → MCB → lamp 1 → lamp 2 → N',h:'Connect lamp 1’s second terminal to lamp 2’s first terminal. Only the last lamp goes back to N.',ok:()=>{const[a,b]=$c('lamp');if(!a||!b)return false;const pl=calc(0).pl,pa=pl.find(p=>p[0]==a.id),pb=pl.find(p=>p[0]==b.id);return!!pa&&!!pb&&pa[1]<LOADS.lamp*.6&&pb[1]<LOADS.lamp*.6}},
+ {t:'Press Run – both lamps glow dimly (about half the voltage each)',h:'Each lamp gets about 115 V instead of 230 V.',ok:()=>PRO&&running&&$c('lamp').filter(l=>l.lit&&l.low).length>=2}]});
 
 pal(true);ui();render();proPanel();lessonCard();
 

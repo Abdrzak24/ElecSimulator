@@ -189,7 +189,7 @@ body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var
 #ctx .cnt{font-size:12px;font-weight:600;color:var(--mut);padding:0 10px}
 body #fl #bsel.on{color:#2563eb;background:color-mix(in srgb,#2563eb 16%,transparent)}
 #tip{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(66px + env(safe-area-inset-bottom,0px));max-width:min(420px,calc(100vw - 24px));padding:6px 14px;border-radius:999px;background:color-mix(in srgb,var(--pn) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--bd);font-size:12px;color:var(--mut);z-index:11;text-align:center;pointer-events:none}
-#tip[hidden]{display:none}
+#tip[hidden]{display:none}#tip.err,#tip.warn{white-space:normal;border-radius:14px;color:var(--ink);text-align:left}#tip.err{border-color:#ef4444;background:color-mix(in srgb,#ef4444 12%,var(--pn))}#tip.warn{border-color:#f59e0b;background:color-mix(in srgb,#f59e0b 12%,var(--pn))}#tip.info{white-space:normal;border-radius:14px}
 #lsn{position:absolute;left:10px;top:10px;z-index:4;width:min(270px,calc(100% - 96px));background:color-mix(in srgb,var(--pn) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 6px 22px #0003;padding:10px 12px;font-size:12px}
 #lsn[hidden]{display:none}
 #lsn .lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px}
@@ -485,7 +485,7 @@ function calc(mark){
   if(fd){const o=mkO(t,fd.V*(t.type=='tup'?t.s.ratio:1/t.s.ratio));o.feed=fd;o.tr=1;out.push(o)}});
  out.forEach(o=>{if(o.short)return;const lo=(d,a,b)=>{const x=f(d.id+':'+a),y=f(d.id+':'+b);return(x==o.nL&&y==o.nN)||(x==o.nN&&y==o.nL)},fv=o.V/SUP.v;
   comps.forEach(d=>{let p=0;if(LOADS[d.type]&&!d.s.dead&&lo(d,'A','B')){p=LOADS[d.type];
-    if(fv>1.4){p=0;if(mark){d.s.dead=1;log('⚠ '+TY[d.type].n+' burned out – '+Math.round(o.V)+' V on a '+SUP.v+' V load')}}
+    if(fv>1.4){p=0;if(mark){d.s.dead=1;log('⚠ '+TY[d.type].n+' burned out – '+Math.round(o.V)+' V on a '+SUP.v+' V load');if(typeof WHYSET=='function')WHYSET(d.id,'err','Burned out: it is built for '+SUP.v+' V but got '+Math.round(o.V)+' V'+(o.ll?' (it was wired between two phases)':'')+'. Use Repair, and fix the wiring first.')}}
     else if(fv<.4){p=0;if(mark)d.low=1}else if(fv<.9&&mark)d.low=1}
    if(d.type=='sock'&&lo(d,'L','N')){if(mark)d.hot=1;if(d.s.plug)p=(fv>1.4||fv<.4)?0:1200}
    if(p){o.P+=p;PL.push([d.id,p,o.V,0]);if(mark&&LOADS[d.type])d.lit=1}})});
@@ -921,7 +921,7 @@ setInterval(()=>{const now=performance.now(),dt=Math.min(1,(now-lastTick)/1000);
  list.forEach(d=>{const x=d.i/d.rate;let h=HEAT[d.id]||0;seen[d.id]=1;
   if(x>1.13){h+=ds/tripTime(x,d.cv)}else h=Math.max(0,h-ds/900);
   HEAT[d.id]=h;
-  if(h>=1){d.trip();HEAT[d.id]=0;ch=1;log('⚠ '+d.name+' tripped (thermal, curve '+d.cv+', '+x.toFixed(2)+'× rated current)')}});
+  if(h>=1){d.trip();HEAT[d.id]=0;ch=1;WHYSET(d.c.id,'err','Tripped slowly: it carried '+d.i.toFixed(1)+' A (about '+x.toFixed(2)+'× its '+d.rate+' A rating) for too long – a thermal trip, curve '+d.cv+'. Reduce the load, then turn it back ON.');log('⚠ '+d.name+' tripped (thermal, curve '+d.cv+', '+x.toFixed(2)+'× rated current)')}});
  Object.keys(HEAT).forEach(k=>{if(!seen[k])delete HEAT[k]});
  if(ch)after();else heatDraw()},250);
 function heatDraw(){const g=$('#heatg');if(!g)return;let h='';Object.entries(HEAT).forEach(([id,v])=>{if(v<.02)return;const c=byId(id.split('#')[0]);if(!c)return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC;h+=`<rect x="${c.x-20}" y="${c.y-eh/2-17}" width="40" height="5" rx="2.5" fill="#e5e7eb" stroke="#9ca3af" stroke-width=".5"/><rect x="${c.x-20}" y="${c.y-eh/2-17}" width="${(40*Math.min(1,v)).toFixed(1)}" height="5" rx="2.5" fill="${v>.7?'#dc2626':'#f59e0b'}"/>`});g.innerHTML=h}
@@ -953,6 +953,7 @@ function xoverlay(){const vp=$('#vp');if(!vp)return;let h='';
  comps.forEach(c=>{if(!c.label||c.type=='note')return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC;h+=`<text class="lb" x="${c.x}" y="${c.y+eh/2+28}" style="font-weight:700;fill:#111827" pointer-events="none">${XESC(c.label)}</text>`});
  if(PRO&&running){wires.forEach(w=>{const p=PROW[w.id];if(p&&p.util>1)h+=`<path d="${wd(w)}" fill="none" stroke="#ef4444" stroke-width="10" opacity=".35" stroke-linecap="round" pointer-events="none"/>`});
   comps.forEach(c=>{const v=PROV[c.id];if(!v)return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC,col=v.pct>5?'#dc2626':v.pct>3?'#d97706':'#16a34a';h+=`<text class="lb" x="${c.x}" y="${c.y-eh/2-4}" style="font-weight:700;fill:${col}" pointer-events="none">−${v.pct.toFixed(1)} %</text>`})}
+ Object.keys(WHY).forEach(id=>{const c=byId(id);if(c&&!whyValid(c))delete WHY[id]});comps.forEach(c=>{if(!((WHY[c.id]&&whyValid(c))||(c.s.dead&&LOADS[c.type])||(running&&c.type=='motor3'&&c.low)))return;const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC,hh=(o?T.w:T.h)*SC;h+=`<g class="wbadge" pointer-events="none"><circle cx="${c.x+w/2-2}" cy="${c.y-hh/2+2}" r="9" fill="#dc2626" stroke="#fff" stroke-width="2"/><text x="${c.x+w/2-2}" y="${c.y-hh/2+6}" text-anchor="middle" style="font:700 12px sans-serif;fill:#fff">!</text></g>`});
  h+='<g id="heatg" pointer-events="none"></g>';vp.insertAdjacentHTML('beforeend',h);heatDraw()}
 /* ---------- Learn hints ---------- */
 const TIPS={src:'Supplies the circuit. L = live (red), N = neutral (blue), E = earth (green).',mcb:'Cuts the circuit on overload or short circuit. Put it on the live wire.',rcd:'Trips when current leaks to earth. Live and neutral both pass through it.',rcbo:'An RCD and an MCB in one device.',sw1:'Always switch the live wire, never the neutral. Tap the switch to toggle it.',sw2:'Two of these control one lamp from two places.',swi:'Goes between two 2-way switches to control a lamp from three places.',lamp:'Connect it between live and neutral.',sock:'Connect L, N and E (earth). Protect it with an RCD.',fuse:'Melts and opens the circuit when the current is too high.',motor:'Needs live and neutral. It spins when powered.',oven:'A big load (about 3 kW) – it needs a strong breaker.',heater:'A big load (about 2 kW).',src3:'Three live phases (L1–L3), neutral and earth. 230 V phase to neutral, 400 V between phases.',motor3:'Connect U, V, W to L1, L2, L3 – usually through a 3-pole breaker.',mcb3:'One pole per phase. All three open together.',note:'Use Edit text to change what it says.',batt:'Stores solar energy. Use a charge controller between panel and battery.',pv:'Makes DC power from sunlight. Change the sun level in Meters & solar.',mppt:'Charge controller: panel on the PV side, battery on the BAT side.',inv:'Turns battery DC into AC.',meter:'Counts energy used, in kWh.',db:'Distribution board: splits one supply into several protected circuits.',timer:'Turns itself off after 10 seconds.',pb:'Push button – closed only while you hold it.',relay:'A switch operated by a small control current.'};
@@ -960,15 +961,16 @@ const TIPS={src:'Supplies the circuit. L = live (red), N = neutral (blue), E = e
 const RATED=c=>c.s&&('rate' in c.s||c.type=='db');
 const _ui=ui;ui=function(){_ui();xui()};
 function xui(){document.querySelectorAll('#modeseg [data-a]').forEach(b=>b.classList.toggle('on',(b.dataset.a=='mpro')==PRO));
- $('#bsel').classList.toggle('on',selMode);$('#pro').hidden=!PRO;const x=$('#ctx'),tip=$('#tip');let t='';
+ $('#bsel').classList.toggle('on',selMode);$('#pro').hidden=!PRO;const x=$('#ctx'),tip=$('#tip');let t='',W=null;
  if(msel.size){$('#bd').disabled=false;$('#bro').disabled=true;x.innerHTML=`<span class="cnt">${msel.size} selected</span><button data-x="mcopy">Copy</button><button data-x="mdel">Delete</button><button data-x="mclr">Done</button>`}
  else{const c=sel&&byId(sel);
   if(c){let a='';
    if(PRO&&RATED(c)){const rl=c.type=='db'?[6,10,16,20,25,32,40,63]:rateList(c),r=c.s.rate||32;a+=`<select id="cr" title="Rating (A)">${rl.map(v=>`<option value="${v}"${v==r?' selected':''}>${v} A</option>`).join('')}</select>`;
     if(c.type!='cb'&&c.type!='mccb')a+=`<select data-x="curve" title="Trip curve">${['B','C','D'].map(v=>`<option${v==curveOf(c)?' selected':''}>${v}</option>`).join('')}</select><button data-x="curve-show">Curve</button>`}
-   a+=`<button data-x="label">${c.type=='note'?'Edit text':c.label?'Rename':'Label'}</button>`;x.insertAdjacentHTML('beforeend',a);if(!PRO)t=TIPS[c.type]||''}
-  else if(selW&&PRO){const w=wires.find(w=>w.id==selW);if(w){const p=PROW[w.id];x.innerHTML=`<span class="cnt">${WN[w.k]||w.k} · ${wlen(w).toFixed(1)} m${p?' · '+p.i.toFixed(1)+' A':''}</span>${w.k=='E'&&0?'':`<select data-x="wsz" title="Cable size">${SIZES.map(v=>`<option value="${v}"${v==wsz(w)?' selected':''}>${v} mm²</option>`).join('')}</select>`}<button data-i="w">Delete wire</button>`}}}
- tip.textContent=t;tip.hidden=!t}
+   a+=`<button data-x="label">${c.type=='note'?'Edit text':c.label?'Rename':'Label'}</button>`;x.insertAdjacentHTML('beforeend',a);W=whyNow(c);t=W?W.t:(!PRO&&TIPS[c.type])||''}
+  else if(selW){const w=wires.find(w=>w.id==selW);if(w){const p=PRO?PROW[w.id]:null;x.innerHTML=`<span class="cnt">${WN[w.k]||w.k} · ${wlen(w).toFixed(1)} m${p?' · '+p.i.toFixed(1)+' A':''}</span>${w.k=='E'&&0?'':`<select data-x="wsz" title="Cable size">${SIZES.map(v=>`<option value="${v}"${v==wsz(w)?' selected':''}>${v} mm²</option>`).join('')}</select>`}<button data-i="w">Delete wire</button>`}}}
+ if(!t){const k=extraWhy();if(k){W=k;t=k.t}}
+ tip.className=W?W.sev:'';tip.textContent=(W&&W.sev!='info'?'⚠ ':'')+t;tip.hidden=!t}
 $('#ctx').addEventListener('click',e=>{const b=e.target.closest('[data-x]');if(!b)return;const a=b.dataset.x;
  if(a=='label'){const c=byId(sel);if(c)labelUI(c)}else if(a=='curve-show'){const c=byId(sel);if(c)curveUI(c)}
  else if(a=='mcopy')mcopy();else if(a=='mdel')del();else if(a=='mclr'){msel.clear();render();ui()}});
@@ -1032,7 +1034,7 @@ addEventListener('keydown',e=>{if(['SELECT','INPUT','TEXTAREA'].includes(e.targe
 function saveBlob(b,n){const u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download=n;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)}
 async function inlineImgs(root){const ims=[...root.querySelectorAll('image')];await Promise.all(ims.map(async im=>{const h=im.getAttribute('href')||im.getAttributeNS('http://www.w3.org/1999/xlink','href');if(!h||h.startsWith('data:'))return;try{const b=await (await fetch(h)).blob(),u=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(b)});im.setAttribute('href',u)}catch(e){}}))}
 async function diagramImage(scale){const keep={sel,selW,mk:mkr,ms:msel};sel=selW=null;mkr=null;msel=new Set();let vp;try{render();vp=$('#vp').cloneNode(true)}finally{sel=keep.sel;selW=keep.selW;mkr=keep.mk;msel=keep.ms;render()}
- ['#bgr','#pv','#snap','#heatg','#mks','#selbox'].forEach(q=>vp.querySelectorAll(q).forEach(n=>n.remove()));vp.querySelectorAll('.hit,.term,.flow').forEach(n=>n.remove());await inlineImgs(vp);
+ ['#bgr','#pv','#snap','#heatg','#mks','#selbox','.wbadge'].forEach(q=>vp.querySelectorAll(q).forEach(n=>n.remove()));vp.querySelectorAll('.hit,.term,.flow').forEach(n=>n.remove());await inlineImgs(vp);
  let bb=[1e9,1e9,-1e9,-1e9];comps.forEach(c=>{const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC/2,h=(o?T.w:T.h)*SC/2;bb=[Math.min(bb[0],c.x-w),Math.min(bb[1],c.y-h),Math.max(bb[2],c.x+w),Math.max(bb[3],c.y+h+40)]});
  wires.forEach(w=>wpts(w,LN[w.id]||0).forEach(p=>{bb=[Math.min(bb[0],p[0]),Math.min(bb[1],p[1]),Math.max(bb[2],p[0]),Math.max(bb[3],p[1])]}));
  const pad=26,x=bb[0]-pad,y=bb[1]-pad-22,w=bb[2]-bb[0]+2*pad,h=bb[3]-bb[1]+2*pad+22,sc=Math.min(scale,6000/Math.max(w,h)),css='.s{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.lb{font:11px sans-serif;fill:#374151;text-anchor:middle}.lt{font:600 9px sans-serif;fill:#fff;text-anchor:middle}.body{fill:transparent}';
@@ -1129,7 +1131,6 @@ Object.assign(ACT,{del,selmode(){selMode=!selMode;if(!selMode&&!msel.size){}log(
  dup(){if(msel.size)return mcopy();const c=byId(sel);if(c){push();const n=clone(c);n.id='c'+nid++;n.x+=45;n.y+=45;comps.push(n);sel=n.id;after()}}});
 const _after=after;after=function(){_after();proPanel();lessonTick()};
 Object.assign(KW,{src3:'three phase 3 phase 400v supply',motor3:'three phase motor 3 phase',note:'text label annotation comment'});
-pal(true);ui();render();proPanel();lessonCard();
 /* ---------- short circuit link (compressed, one line) ---------- */
 function circuitCompact(){const idx={};comps.forEach((c,i)=>idx[c.id]=i);
  return JSON.stringify({v:1,c:comps.map(c=>{const a=[c.type,Math.round(c.x),Math.round(c.y)],o={};if(c.rot)o.r=c.rot;if(JSON.stringify(c.s)!=JSON.stringify(TY[c.type].s))o.s=c.s;if(c.label)o.l=c.label;if(c.mode)o.m=c.mode;return Object.keys(o).length?a.concat([o]):a}),
@@ -1149,6 +1150,56 @@ function openHashLink(){if(location.hash.startsWith('#c=')){const c=location.has
 const _exportUI2=exportUI;exportUI=function(){_exportUI2();const m=document.querySelector('#mdb .mbtns');if(m)m.insertAdjacentHTML('afterbegin','<button class="big" data-ex="link">🔗 Copy short link</button>')};
 const _exAct2=exAct;exAct=async function(a){if(a=='link'){try{const l=await circuitLink();try{await navigator.clipboard.writeText(l);say('✔ Link copied ('+l.length+' characters) – paste it in a message')}catch(e){say(l)}}catch(e){say('Could not make the link.',1)}return}return _exAct2(a)};
 addEventListener('hashchange',openHashLink);openHashLink();
+/* ---------- "why did that happen?" explanations ---------- */
+let WHY={},FLASH=null;
+const PROTT=new Set(['mcb','rcbo','fuse','cb','rcd','db',...Object.keys(MP)]);
+const protOff=c=>{const s=c.s||{};return s.on===0||!!s.blown||(Array.isArray(s.bl)&&s.bl.some(Boolean))||(Array.isArray(s.b)&&s.b.some(x=>!x))||!!s.tr};
+const whyValid=c=>PROTT.has(c.type)?protOff(c):!!c.s.dead;
+function WHYSET(id,sev,t){WHY[id]={sev,t};FLASH={id,until:Date.now()+8000};setTimeout(()=>{try{ui()}catch(e){}},8100)}
+const tkey=()=>{const o={};comps.forEach(c=>{if(PROTT.has(c.type))o[c.id]=JSON.stringify([c.s.on,c.s.blown,c.s.bl,c.s.b,c.s.tr])});return o};
+const tchanged=(a,b)=>Object.keys(b).filter(id=>a[id]!==b[id]&&byId(id)&&protOff(byId(id)));
+const _trip=trip;trip=function(f,n,ef,msg){const a=tkey(),r=_trip(f,n,ef,msg);
+ if(r)tchanged(a,tkey()).forEach(id=>{let t;
+  if(/phases/.test(msg))t='Tripped: two phases touched each other (a short circuit), so a huge current flowed. Remove the fault, then turn it back ON.';
+  else if(/L–N/.test(msg))t='Tripped: live touched neutral (a short circuit), so a huge current flowed. Remove the fault, then turn it back ON.';
+  else if(/Earth fault/.test(msg))t='Tripped: live touched earth (an earth fault) – the device cut the power to protect people. Remove the fault, then turn it back ON.';
+  else t='Tripped: '+msg+'. Remove the fault, then turn it back ON.';
+  WHYSET(id,'err',t)});
+ return r};
+const _ovl=ovl;ovl=function(){let list=[];try{if(running)list=devI()}catch(e){}const a=tkey();_ovl();
+ tchanged(a,tkey()).forEach(id=>{const d=list.find(z=>z.id==id||z.id.startsWith(id+'#')),c=byId(id);
+  WHYSET(id,'err',d?`Tripped: ${d.i.toFixed(1)} A flowed but it is rated ${d.rate} A (overload${PRO?', '+(d.i/d.rate).toFixed(1)+'× rated, curve '+d.cv:''}). Remove some load or use a bigger breaker, then turn it back ON.`:'Tripped: too much current (overload). Remove some load, then turn it back ON.')})};
+const _sim3=sim;sim=function(){Object.keys(WHY).forEach(id=>{const c=byId(id);if(!c||!whyValid(c))delete WHY[id]});const a=tkey();_sim3();
+ tchanged(a,tkey()).forEach(id=>{if(WHY[id])return;const c=byId(id),rc=c.type=='rcd'||c.type=='rcbo'||(MP[c.type]&&MP[c.type].kind=='rc');
+  WHYSET(id,'err',rc?'RCD tripped: current is leaking to earth (a fault in an appliance). Clear the fault, then turn it back ON.':'Tripped: a protective device operated. Check the circuit, then turn it back ON.')})};
+/* why has a part got no power? */
+const SWT=['sw1','sw2g','sw3g','sw4g','pb','timer'];
+function noPower(c){if(comps.some(x=>['tup','tdn'].includes(x.type)))return null;
+ const src=comps.find(x=>['src','src3','inv','gen'].includes(x.type));if(!src)return{sev:'warn',t:'No power: there is no power source in the circuit.'};
+ const f=build(),L=f(src.id+':'+(src.type=='src3'?'L1':'L')),N=f(src.id+':N'),a=f(c.id+':A'),b=f(c.id+':B'),hasL=a==L||b==L,hasN=a==N||b==N;
+ const offs=comps.filter(x=>x!==c&&x.s&&(x.s.on===0||x.s.blown||(Array.isArray(x.s.g)&&!x.s.g.some(Boolean))));
+ for(const d of offs){const s=d.s,old=JSON.stringify(s);let ok=false;
+  try{if('blown' in s)s.blown=0;if(s.on===0)s.on=1;if(Array.isArray(s.g))s.g=s.g.map(()=>1);ok=calc(0).pl.some(p=>p[0]==c.id)}finally{Object.keys(s).forEach(k=>delete s[k]);Object.assign(s,JSON.parse(old))}
+  if(ok){const n=TY[d.type].n;return SWT.includes(d.type)?{sev:'info',t:`No power: the ${n} is OFF. Tap it to turn it ON.`}:'blown' in s?{sev:'warn',t:'No power: the fuse has blown. Replace it.'}:{sev:'warn',t:`No power: the ${n} is OFF (tripped or switched off). Turn it ON.`}}}
+ if(!hasL&&!hasN)return{sev:'warn',t:'No power: it is not connected to the supply yet. Draw a red live wire and a blue neutral wire to it.'};
+ if(!hasL)return{sev:'warn',t:'No power: its live terminal is not connected to the red live wire from the source.'};
+ if(!hasN)return{sev:'warn',t:'No power: live arrives, but the blue neutral wire is missing, so the circuit is not complete.'};
+ if(a==b)return{sev:'warn',t:'No power: both its terminals are on the same wire, so no current flows through it.'};
+ return null}
+function whyNow(c){const w=WHY[c.id];if(w&&whyValid(c))return w;
+ if(c.s.dead&&LOADS[c.type])return{sev:'err',t:'Not working: it is broken (open circuit). Use Repair to fix it.'};
+ if(PROTT.has(c.type)&&protOff(c)&&c.type!='db')return{sev:'info',t:'Switched off. Turn it ON to restore the power.'};
+ if(running&&c.type=='motor3'&&c.low)return{sev:'err',t:'Not running: only some of the 3 phases reach it. Check that L1, L2 and L3 are all connected.'};
+ if(running&&LOADS[c.type]&&!c.s.dead&&!c.lit){const d=noPower(c);if(d)return d}
+ if(running&&LOADS[c.type]&&c.low)return{sev:'warn',t:'Running weak: the voltage reaching it is too low.'};
+ if(PRO&&running&&PROV[c.id]&&PROV[c.id].pct>5)return{sev:'warn',t:`Voltage drop is ${PROV[c.id].pct.toFixed(1)} % (limit 5 %): the cable is too long or too thin. Pick a bigger cable size.`};
+ try{const a=analyze();if(a){const it=a.find(i=>i.tg&&i.tg.some(t=>(t.k=='c'&&t.id==c.id)||(t.k=='t'&&String(t.id).startsWith(c.id+':'))));if(it)return{sev:it.sev=='err'?'err':'warn',t:it.msg+(it.fix?' '+it.fix:'')}}}catch(e){}
+ return null}
+function extraWhy(){if(msel.size)return null;
+ if(selW){const w=wires.find(w=>w.id==selW),p=w&&PROW[w.id];if(p&&p.util>1)return{sev:'err',t:`Cable overloaded: it carries ${p.i.toFixed(1)} A but a ${p.sz} mm² cable is rated about ${p.amp} A. Pick a bigger size.`};return null}
+ if(!sel&&FLASH&&Date.now()<FLASH.until&&WHY[FLASH.id]&&byId(FLASH.id))return WHY[FLASH.id];return null}
+
+pal(true);ui();render();proPanel();lessonCard();
 
 
 </script><script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>

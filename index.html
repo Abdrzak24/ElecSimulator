@@ -182,6 +182,18 @@ body #fl button:disabled{opacity:.3}body #fl button.on{background:none;color:var
 #ctx button:hover,#ctx button:active{background:var(--ac);color:#fff}
 #ctx b{margin:0 4px 0 10px;font-size:12px;font-weight:600;color:var(--mut)}
 
+#svg{--lblc:#111827}
+:root[data-theme=dark] #svg{background:#0d1015;color:#e5e7eb;--lblc:#e5e7eb}
+:root[data-theme=dark] #svg .lb{fill:#cbd5e1}
+:root[data-theme=dark] #svg #g path{stroke:#1b212b}
+:root[data-theme=dark] #svg path[data-k=M]{stroke:#9ca3af}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) #svg{background:#0d1015;color:#e5e7eb;--lblc:#e5e7eb}
+:root:not([data-theme=light]) #svg .lb{fill:#cbd5e1}
+:root:not([data-theme=light]) #svg #g path{stroke:#1b212b}
+:root:not([data-theme=light]) #svg path[data-k=M]{stroke:#9ca3af}}
+#svg g[data-ty=iphone]>g:first-child,#svg g[data-ty=tv]>g:first-child,#svg g[data-ty=batt]>g:first-child{filter:none}
+:root[data-theme=dark] #svg :is(g[data-ty=iphone],g[data-ty=tv],g[data-ty=batt])>g:first-child{filter:drop-shadow(0 0 1px #cbd5e1) drop-shadow(0 0 .6px #cbd5e1)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) #svg :is(g[data-ty=iphone],g[data-ty=tv],g[data-ty=batt])>g:first-child{filter:drop-shadow(0 0 1px #cbd5e1) drop-shadow(0 0 .6px #cbd5e1)}}
 #sm{gap:5px}#sm button{min-height:34px}#modeseg{display:flex;border:1px solid var(--bd);border-radius:999px;overflow:hidden;flex:none}
 #modeseg button{flex:1;border:0;border-radius:0;min-height:30px;font-size:12px;font-weight:600;background:transparent}
 #modeseg button.on{background:var(--ac);color:#fff}
@@ -226,7 +238,7 @@ body #fl #bsel.on{color:#2563eb;background:color-mix(in srgb,#2563eb 16%,transpa
   <button data-a="bom">📋 Bill of materials</button>
   <button id="bg" data-a="grid" title="Toggle grid">▦ Grid</button>
   <button data-a="theme">◐ Light / dark</button>
-  <button data-a="dup" title="Duplicate the selected component">⧉ Copy selected</button>
+    <button data-a="dup" title="Duplicate the selected component">⧉ Copy selected</button>
   <button data-p="right">📊 Meters &amp; solar</button>
   <button data-a="load">⤒ Import circuit</button>
   <button data-a="fb">💬 Send feedback</button>
@@ -617,13 +629,13 @@ function photoArt(c){const T=TY[c.type],sd=Math.max(60,Math.min(92,Math.min(T.w,
  if(live&&c.lit)g+=`<circle cx="${h-6}" cy="${-h+6}" r="3.6" fill="#22c55e" stroke="#fff" stroke-width="1.2" pointer-events="none"/>`;
  return g}
 function body(c,m){const T=TY[c.type];return m=='sch'?T.sch(c):Object.values(T.t).map(([x,y])=>tax(T,x,y)=='v'?`<path d="M${x} ${y}V${Math.sign(y)*(T.ly||T.lx)}" stroke="#6b7280" stroke-width="3"/>`:`<path d="M${x} ${y}H${Math.sign(x)*T.lx}" stroke="#6b7280" stroke-width="3"/>`).join('')+(artOf(c)||(PH[c.type]?photoArt(c):T.real(c)))}
-function drawC(c){const T=TY[c.type],m=c.mode||gmode,odd=c.rot%2,eh=odd?T.w:T.h;let h=`<g data-id="${c.id}"><g transform="translate(${c.x} ${c.y}) rotate(${c.rot*90}) scale(${SC})">`;
+function drawC(c){const T=TY[c.type],m=c.mode||gmode,odd=c.rot%2,eh=odd?T.w:T.h;let h=`<g data-id="${c.id}" data-ty="${c.type}"><g transform="translate(${c.x} ${c.y}) rotate(${c.rot*90}) scale(${SC})">`;
  h+=body(c,m)+`<rect class="body" x="${-T.w/2}" y="${-T.h/2}" width="${T.w}" height="${T.h}"/>`;
  if(sel==c.id)h+=`<rect x="${-T.w/2-2}" y="${-T.h/2-2}" width="${T.w+4}" height="${T.h+4}" rx="6" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4" pointer-events="none"/>`;
  h+=Object.entries(T.t).map(([n,[x,y,k]])=>{const id=c.id+':'+n,w=CT[id],hit=`<circle class="term" data-t="${id}" cx="${x}" cy="${y}" r="${TR}"/>`;
   if(m=='sch')return `<circle cx="${x}" cy="${y}" r="${w?5:4}" fill="${w||KC[k]}" stroke="${w?'#fff':'#111'}" stroke-width="${w?1.6:1}" pointer-events="none"/>`+hit;
   const ring=w||(k?KC[k]:'');
-  return `<g pointer-events="none"><circle cx="${x}" cy="${y}" r="8.6" fill="url(#tcu)" stroke="#7c2d12" stroke-width="1"/>${ring?`<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${ring}" stroke-width="2.6"/>`:''}<circle cx="${x}" cy="${y}" r="3.9" fill="#2a1a0e" stroke="#e7a25b" stroke-width=".8"/><path d="M${x-2.8} ${y+.8}L${x+2.8} ${y-.8}" stroke="#9ca3af" stroke-width="1.1"/></g>`+hit}).join('')+'</g>';
+  return `<g pointer-events="none" transform="translate(${x} ${y}) scale(.7) translate(${-x} ${-y})"><circle cx="${x}" cy="${y}" r="8.6" fill="url(#tcu)" stroke="#7c2d12" stroke-width="1"/>${ring?`<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${ring}" stroke-width="2.6"/>`:''}<circle cx="${x}" cy="${y}" r="3.9" fill="#2a1a0e" stroke="#e7a25b" stroke-width=".8"/><path d="M${x-2.8} ${y+.8}L${x+2.8} ${y-.8}" stroke="#9ca3af" stroke-width="1.1"/></g>`+hit}).join('')+'</g>';
  h+=`<text class="lb" x="${c.x}" y="${c.y+eh*SC/2+14}">${c.type=='note'?'':T.n}${c.s.rate?' '+c.s.rate+'A':''}${c.s.dead?' ✖':''}${c.s.leak?' ⚡':''}${c.low?' ↓V':''}</text>`;
  if(m=='hyb'){const bh=.6*(T.h+10);h+=`<g transform="translate(${c.x} ${c.y-eh*SC/2-bh/2-3}) scale(.6)" pointer-events="none" style="color:#111"><rect x="-50" y="${-(T.h+10)/2}" width="100" height="${T.h+10}" rx="8" fill="#fff" stroke="#9ca3af" stroke-width="2"/>${T.sch(c)}</g>`}
  return h+'</g>'}
@@ -651,7 +663,7 @@ let CT={};
 const WW=w=>Math.max(2.5,Math.min(13,4*Math.sqrt((w.sz||(typeof CABDEF=='number'?CABDEF:2.5))/2.5)));
 function render(){LN=lanes();CT={};wires.forEach(w=>{CT[w.a]=CT[w.b]=WC[w.k]||'#111'});
  let h=`<defs><radialGradient id="gl"><stop offset="0" stop-color="#fde047" stop-opacity=".8"/><stop offset="1" stop-color="#fde047" stop-opacity="0"/></radialGradient><radialGradient id="gr"><stop offset="0" stop-color="#ef4444" stop-opacity=".7"/><stop offset="1" stop-color="#ef4444" stop-opacity="0"/></radialGradient><radialGradient id="tcu" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fcd9a0"/><stop offset=".55" stop-color="#e08a2e"/><stop offset="1" stop-color="#9a4a0e"/></radialGradient><linearGradient id="blk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b0d12"/><stop offset=".3" stop-color="#3a3f4a"/><stop offset="1" stop-color="#0b0d12"/></linearGradient><linearGradient id="wht" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cbd5e1"/><stop offset=".3" stop-color="#f8fafc"/><stop offset="1" stop-color="#cbd5e1"/></linearGradient><linearGradient id="pl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e9e2"/><stop offset="1" stop-color="#e3c7b9"/></linearGradient><linearGradient id="lev" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".4" stop-color="#5b7cf7"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient><linearGradient id="lvg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b7280"/><stop offset=".4" stop-color="#e5e7eb"/><stop offset="1" stop-color="#6b7280"/></linearGradient><linearGradient id="brs" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#92400e"/><stop offset=".35" stop-color="#fcd34d"/><stop offset="1" stop-color="#92400e"/></linearGradient><radialGradient id="gls" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#bcd3e6" stop-opacity=".55"/></radialGradient><radialGradient id="glw" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fffef0"/><stop offset="1" stop-color="#fde047"/></radialGradient><clipPath id="pcl" clipPathUnits="objectBoundingBox"><rect width="1" height="1" rx=".1"/></clipPath><pattern id="g" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#e5e7eb"/></pattern></defs><rect id="bgr" x="-5000" y="-5000" width="10000" height="10000" fill="${grid?'url(#g)':'#fff'}"/>`;
- h+=wires.map(w=>{const d=wd(w);return`<g data-w="${w.id}"><path class="hit" d="${d}"/>`+(selW==w.id?`<path d="${d}" fill="none" stroke="#f59e0b" stroke-width="${WW(w)+5}" opacity=".5"/>`:'')+(running&&w.live?`<path d="${d}" fill="none" stroke="#fde68a" stroke-width="${WW(w)+5}" opacity=".6"/>`:'')+`<path d="${d}" fill="none" stroke="${WC[w.k]}" stroke-width="${WW(w)}" pointer-events="none"/>`+(w.k=='E'?`<path d="${d}" fill="none" stroke="#facc15" stroke-width="${WW(w)}" stroke-dasharray="8 8" pointer-events="none"/>`:'')+(w.flow?`<path class="flow" d="${d}" pointer-events="none"/>`:'')+'</g>'}).join('');
+ h+=wires.map(w=>{const d=wd(w);return`<g data-w="${w.id}"><path class="hit" d="${d}"/>`+(selW==w.id?`<path d="${d}" fill="none" stroke="#f59e0b" stroke-width="${WW(w)+5}" opacity=".5"/>`:'')+(running&&w.live?`<path d="${d}" fill="none" stroke="#fde68a" stroke-width="${WW(w)+5}" opacity=".6"/>`:'')+`<path d="${d}" fill="none" stroke="${WC[w.k]}" stroke-width="${WW(w)}" data-k="${w.k}" pointer-events="none"/>`+(w.k=='E'?`<path d="${d}" fill="none" stroke="#facc15" stroke-width="${WW(w)}" stroke-dasharray="8 8" pointer-events="none"/>`:'')+(w.flow?`<path class="flow" d="${d}" pointer-events="none"/>`:'')+'</g>'}).join('');
  h+=comps.map(drawC).join('')+marksSVG()+'<path id="pv" fill="none" stroke="#6b7280" stroke-width="3" stroke-dasharray="4 4" pointer-events="none"/><circle id="snap" r="17" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="3" display="none" pointer-events="none"/>';
  $('#vp').innerHTML=h;applyView()}
 function applyView(){$('#vp').setAttribute('transform',`translate(${view.x} ${view.y}) scale(${view.z})`);$('#zl').textContent=Math.round(view.z*100)+'%'}
@@ -951,7 +963,7 @@ const _an=analyze;analyze=function(){const o=_an();if(!o||!PRO||!running)return 
 const _render=render;render=function(){_render();xoverlay()};
 function xoverlay(){const vp=$('#vp');if(!vp)return;let h='';
  msel.forEach(id=>{const c=byId(id);if(!c){msel.delete(id);return}const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC,hh=(o?T.w:T.h)*SC;h+=`<rect x="${c.x-w/2-4}" y="${c.y-hh/2-4}" width="${w+8}" height="${hh+8}" rx="8" fill="rgba(37,99,235,.08)" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4" pointer-events="none"/>`});
- comps.forEach(c=>{if(!c.label||c.type=='note')return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC;h+=`<text class="lb" x="${c.x}" y="${c.y+eh/2+28}" style="font-weight:700;fill:#111827" pointer-events="none">${XESC(c.label)}</text>`});
+ comps.forEach(c=>{if(!c.label||c.type=='note')return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC;h+=`<text class="lb" x="${c.x}" y="${c.y+eh/2+28}" style="font-weight:700;fill:var(--lblc,#111827)" pointer-events="none">${XESC(c.label)}</text>`});
  if(PRO&&running){wires.forEach(w=>{const p=PROW[w.id];if(p&&p.util>1)h+=`<path d="${wd(w)}" fill="none" stroke="#ef4444" stroke-width="10" opacity=".35" stroke-linecap="round" pointer-events="none"/>`});
   comps.forEach(c=>{const v=PROV[c.id];if(!v)return;const T=TY[c.type],eh=(c.rot%2?T.w:T.h)*SC,col=v.pct>5?'#dc2626':v.pct>3?'#d97706':'#16a34a';h+=`<text class="lb" x="${c.x}" y="${c.y-eh/2-4}" style="font-weight:700;fill:${col}" pointer-events="none">−${v.pct.toFixed(1)} %</text>`})}
  Object.keys(WHY).forEach(id=>{const c=byId(id);if(c&&!whyValid(c))delete WHY[id]});comps.forEach(c=>{if(!((WHY[c.id]&&whyValid(c))||(c.s.dead&&LOADS[c.type])||(running&&c.type=='motor3'&&c.low)))return;const T=TY[c.type],o=c.rot%2,w=(o?T.h:T.w)*SC,hh=(o?T.w:T.h)*SC;h+=`<g class="wbadge" pointer-events="none"><circle cx="${c.x+w/2-2}" cy="${c.y-hh/2+2}" r="9" fill="#dc2626" stroke="#fff" stroke-width="2"/><text x="${c.x+w/2-2}" y="${c.y-hh/2+6}" text-anchor="middle" style="font:700 12px sans-serif;fill:#fff">!</text></g>`});
@@ -1234,6 +1246,8 @@ LESSONS.push({id:'series',t:'Series circuit',lv:'Pro',pro:1,d:'Two lamps one aft
  {t:'Add an AC Source, an MCB and two Lamps',ok:()=>$c('src').length&&$c('mcb').length&&$c('lamp').length>=2},
  {t:'Wire the lamps one after the other: L → MCB → lamp 1 → lamp 2 → N',h:'Connect lamp 1’s second terminal to lamp 2’s first terminal. Only the last lamp goes back to N.',ok:()=>{const[a,b]=$c('lamp');if(!a||!b)return false;const pl=calc(0).pl,pa=pl.find(p=>p[0]==a.id),pb=pl.find(p=>p[0]==b.id);return!!pa&&!!pb&&pa[1]<LOADS.lamp*.6&&pb[1]<LOADS.lamp*.6}},
  {t:'Press Run – both lamps glow dimly (about half the voltage each)',h:'Each lamp gets about 115 V instead of 230 V.',ok:()=>PRO&&running&&$c('lamp').filter(l=>l.lit&&l.low).length>=2}]});
+
+
 
 pal(true);ui();render();proPanel();lessonCard();
 

@@ -9,10 +9,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ElecSimulator">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="color-scheme" content="light dark">
 <title>ElecSimulator</title>
 <style>
-:root{--bg:#f3f4f6;--pn:#fff;--ink:#111827;--mut:#6b7280;--bd:#d1d5db;--ac:#2563eb;box-sizing:border-box;color-scheme:light}
+:root{--bg:#f3f4f6;--pn:#fff;--ink:#111827;--mut:#6b7280;--bd:#d1d5db;--ac:#2563eb;box-sizing:border-box;color-scheme:light dark}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1115;--pn:#181b22;--ink:#e5e7eb;--mut:#9ca3af;--bd:#2d3340;color-scheme:dark}}
 html,body{height:100%;margin:0;touch-action:pan-x pan-y;overscroll-behavior:none;-webkit-text-size-adjust:100%}
 #cv,#svg{touch-action:none}
@@ -220,6 +221,12 @@ body #fl #bsel.on{color:#2563eb;background:color-mix(in srgb,#2563eb 16%,transpa
 .bomt{width:100%;border-collapse:collapse;font-size:13px}.bomt td,.bomt th{padding:5px 6px;border-bottom:1px solid var(--bd);text-align:left}.bomt td:last-child{text-align:right;white-space:nowrap}.bomt th{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
 /* top bar + floating toolbar stay dark in light mode */
 #tb,#fl{--bg:#0f1115;--pn:#181b22;--ink:#e5e7eb;--mut:#9ca3af;--bd:#2d3340;color-scheme:dark}
+
+/* iPhone: keep the toolbar below the status bar (no blur / fade over the buttons) */
+:root{--tbh:calc(54px + env(safe-area-inset-top,0px))}
+body #tb{padding-top:calc(4px + env(safe-area-inset-top,0px))!important;padding-left:calc(8px + env(safe-area-inset-left,0px))!important;padding-right:calc(8px + env(safe-area-inset-right,0px))!important}
+body.full{background:#181b22}
+body.full #app{padding-top:env(safe-area-inset-top,0px);box-sizing:border-box}
 </style></head><body>
 <div id="app">
 <header id="tb">
@@ -578,7 +585,8 @@ const EX={
  hall:{n:'Example: hallway with intermediate switch',p:[['src',90,270],['mcb',300,150],['sw2',510,150],['swi',720,150],['sw2',930,150],['lamp',1140,270]],w:[[0,'L',1,'A','L'],[1,'B',2,'C','L'],[2,'L1',3,'A1','L'],[2,'L2',3,'A2','L'],[3,'B1',4,'L1','L'],[3,'B2',4,'L2','L'],[4,'C',5,'A','L'],[0,'N',5,'B','N']]},
  kitchen:{n:'Example: kitchen socket with isolator + RCD + MCB',p:[['src',90,270],['iso',300,150],['rcd',510,150],['mcb',720,150],['sock',930,270]],w:[[0,'L',1,'LI','L'],[0,'N',1,'NI','N'],[1,'LO',2,'LI','L'],[1,'NO',2,'NI','N'],[2,'LO',3,'A','L'],[3,'B',4,'L','L'],[2,'NO',4,'N','N'],[0,'E',4,'E','E']]},
  garage:{n:'Example: push button → relay → motor',p:[['src',90,270],['mcb',300,150],['pb',510,150],['relay',720,150],['motor',930,270]],w:[[0,'L',1,'A','L'],[1,'B',2,'A','L'],[2,'B',3,'CA','L'],[3,'CB',0,'N','N'],[1,'B',3,'K1','L'],[3,'K2',4,'A','L'],[4,'B',0,'N','N']]}};
-function loadEx(k){const e=EX[k];if(!e)return;push();comps=[];wires=[];sel=selW=null;nid=1;const ids=e.p.map(([t,x,y])=>{const c=mk(t,x,y);comps.push(c);return c.id});e.w.forEach(([a,an,b,bn,kd])=>wires.push({id:'w'+nid++,a:ids[a]+':'+an,b:ids[b]+':'+bn,k:kd}));after();fit();log(e.n)}
+Object.assign(EX,{solarInv:{"n":"Example: solar system with inverter (DC → AC)","p":[["pv",90,105],["pv",90,285],["mppt",345,195],["batt",345,420],["dciso",600,195],["inv",855,195],["mcb",1080,135,3],["ebar",1080,285],["lamp",1290,330],["fan",1290,450],["tv",1290,570]],"w":[[0,"P",2,"PP","P"],[1,"P",2,"PP","P"],[0,"M",2,"PM","M"],[1,"M",2,"PM","M"],[2,"BP",4,"PI","P"],[2,"BM",4,"MI","M"],[3,"P",2,"BP","P"],[3,"M",2,"BM","M"],[4,"PO",5,"P","P"],[4,"MO",5,"M","M"],[5,"L",6,"A","L"],[5,"E",7,"A","E"],[6,"B",8,"A","L"],[6,"B",9,"A","L"],[6,"B",10,"A","L"],[5,"N",8,"B","N"],[5,"N",9,"B","N"],[5,"N",10,"B","N"]],"note":"Sun 80%: 2 × 300 W panels → charge controller → 12 V battery. The inverter turns the 12 V DC into 230 V AC for the lamp, fan and TV. Press ▶ Run, then move the Sun slider in Meters to see the battery charge or drain."},solarDc:{"n":"Example: solar system without inverter (DC loads directly)","p":[["pv",90,105],["pv",90,285],["mppt",345,195],["batt",345,420],["dciso",600,195],["dclamp",900,330],["dcfan",900,450],["usb",900,570],["dcfridge",900,690]],"w":[[0,"P",2,"PP","P"],[1,"P",2,"PP","P"],[0,"M",2,"PM","M"],[1,"M",2,"PM","M"],[2,"BP",4,"PI","P"],[2,"BM",4,"MI","M"],[3,"P",2,"BP","P"],[3,"M",2,"BM","M"],[4,"PO",5,"A","P"],[4,"PO",6,"A","P"],[4,"PO",7,"A","P"],[4,"PO",8,"A","P"],[4,"MO",5,"B","M"],[4,"MO",6,"B","M"],[4,"MO",7,"B","M"],[4,"MO",8,"B","M"]],"note":"No inverter: the 12 V DC lamp, fan, phone charger and fridge run straight from the DC bus, with no conversion loss. Press ▶ Run, then move the Sun slider in Meters to see the battery charge or drain."}});
+function loadEx(k){const e=EX[k];if(!e)return;push();comps=[];wires=[];sel=selW=null;nid=1;const ids=e.p.map(([t,x,y,r,st])=>{const c=mk(t,x,y);if(r)c.rot=r;if(st)Object.assign(c.s,st);comps.push(c);return c.id});e.w.forEach(([a,an,b,bn,kd])=>wires.push({id:'w'+nid++,a:ids[a]+':'+an,b:ids[b]+':'+bn,k:kd}));after();fit();if(e.note)log(e.note);log(e.n)}
 const GANG={sw2g:2,sw3g:3,sw4g:4},gg=c=>c.s.g||(c.s.g=[c.s.a|0,c.s.b|0]);
 Object.entries(GANG).forEach(([k,n])=>{const sp=n==2?40:n==3?30:24,ys=[...Array(n)].map((_,i)=>(i-(n-1)/2)*sp),rw=n==4?16:20,pw=n*rw+8,H=Math.max(60,sp*(n-1)+36),t={IN:[-40,0,'']};ys.forEach((y,i)=>t['O'+(i+1)]=[40,y,'']);
  TY[k]={n:n+'-Gang Switch',w:80,h:H,lx:pw/2,s:{g:Array(n).fill(0)},t,

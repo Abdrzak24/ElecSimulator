@@ -1,6 +1,6 @@
 {
-  "name": "Voltloom",
-  "short_name": "Voltloom",
+  "name": "SaveLab",
+  "short_name": "SaveLab",
   "description": "Wire it, run it \u2013 an interactive electrical wiring simulator.",
   "start_url": ".",
   "scope": ".",

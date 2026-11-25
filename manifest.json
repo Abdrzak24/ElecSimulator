@@ -1,13 +1,12 @@
 {
-  "name": "ElecSimulator",
-  "short_name": "ElecSimulator",
-  "description": "Practice and learn electrical design for homes and other places",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "Voltloom",
+  "short_name": "Voltloom",
+  "description": "Wire it, run it \u2013 an interactive electrical wiring simulator.",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#00113e",
-  "theme_color": "#2563eb",
+  "background_color": "#181b22",
+  "theme_color": "#181b22",
   "icons": [
     {
       "src": "icon-192.png",

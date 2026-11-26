@@ -617,7 +617,7 @@ Object.entries(GANG).forEach(([k,n])=>{const sp=n==2?40:n==3?30:24,ys=[...Array(
   sch:c=>{const g=gg(c);return P('M-40 0H-14')+ys.map((y,i)=>P(`M14 ${y}H40M-14 0L${g[i]?'14 '+y:'12 '+(y*.6-6)}`)+dot(14,y)).join('')+dot(-14,0)},
   real:c=>{const g=gg(c);return `<rect x="${-pw/2}" y="${-H/2+4}" width="${pw}" height="${H-8}" rx="6" fill="#f8f7f2" stroke="#9ca3af" stroke-width="2"/>`+ys.map((_,i)=>{const x=-pw/2+4+i*rw,y=-H/2+10,h=H-20;return `<rect x="${x}" y="${y}" width="${rw-2}" height="${h}" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="${x}" y="${g[i]?y:y+h/2}" width="${rw-2}" height="${h/2}" rx="3" fill="#6b7280" opacity=".55"/>`}).join('')}};
  ACTS[k]=c=>gg(c).map((v,i)=>['Gang '+(i+1)+' '+(v?'OFF':'ON'),c=>{gg(c)[i]^=1}]);NOCLICK[k]=1});
-const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='252634454547',FB_SHARE=false;
+const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='252634454547',FB_SHARE=true;
 async function shortLink(u,strict){const T=(url,ms)=>{const c=new AbortController();setTimeout(()=>c.abort(),ms||7000);return fetch(url,{signal:c.signal})};
  try{const j=await (await T('https://is.gd/create.php?format=json&url='+encodeURIComponent(u))).json();if(j.shorturl)return j.shorturl}catch(e){}
  try{const t=(await (await T('https://tinyurl.com/api-create.php?url='+encodeURIComponent(u))).text()).trim();if(/^https?:\/\/\S+$/.test(t))return t}catch(e){}
@@ -637,7 +637,7 @@ async function sendFB(){const m=$('#fm').value.trim(),S=t=>{$('#fs').textContent
  const o={name:$('#fn').value,contact:$('#fc').value,type:$('#ft').value,part:$('#fa').value,rating:$('#fr').value,message:m,version:APP_VERSION,screen:innerWidth+'x'+innerHeight,device:navigator.userAgent,time:new Date().toISOString()};
  let pic=null;if($('#fk').checked){S('Preparing your design picture…');try{pic=await fbPrep()}catch(e){pic=null}try{o.circuit=pic?pic.link:await circuitShort()}catch(e){}}
  if(FB_URL){try{if(pic)o.picture=await new Promise(ok=>{const r=new FileReader();r.onload=()=>ok(r.result);r.readAsDataURL(pic.blob)});const r=await fetch(FB_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(o)});if(!r.ok)throw 0;S('✔ Thank you! Your feedback was sent.');$('#fm').value='';setTimeout(()=>$('#fd').close(),1600)}catch(e){S('Could not send (check your internet). Your text is kept – try again.')}return}
- const t='SaveLab feedback '+APP_VERSION+'\nName: '+o.name+'\nContact: '+o.contact+'\nType: '+o.type+'\nPart: '+o.part+'\nRating: '+o.rating+'/5\n\n'+m+'\n\nDevice: '+o.screen+' '+o.device+(o.circuit?'\n\nCircuit: '+o.circuit:'')+(pic?'\n(Design picture attached)':'');
+ const t='SaveLab feedback '+APP_VERSION+'\nName: '+o.name+'\nContact: '+o.contact+'\nType: '+o.type+'\nPart: '+o.part+'\nRating: '+o.rating+'/5\n\n'+m+'\n\nDevice: '+o.screen+' '+o.device+(o.circuit?'\n\nCircuit: '+o.circuit:'')+'';
  const t2=t;let pn='';
  if(FB_SHARE&&pic&&navigator.canShare&&navigator.canShare({files:[pic.file]})){try{const fl=[pic.file];if(!pic.link&&navigator.canShare({files:[pic.file,pic.json]}))fl.push(pic.json);await navigator.share({files:fl,text:t,title:'SaveLab feedback'});S('✔ Pick WhatsApp (or any app) and send it to the developer – thank you!');return}catch(e){if(e&&e.name=='AbortError'){S('Cancelled.');return}}}
  if(pic){const phone=matchMedia('(pointer:coarse)').matches;let ok=false;try{await navigator.clipboard.write([new ClipboardItem({'image/png':pic.blob})]);ok=true}catch(e){}

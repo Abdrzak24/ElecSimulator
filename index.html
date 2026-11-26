@@ -297,7 +297,7 @@ body.drawing #svg{cursor:crosshair;touch-action:none}
  <label>How do you rate the app?<select id="fr"><option value="5">★★★★★ Excellent</option><option value="4">★★★★ Good</option><option value="3">★★★ OK</option><option value="2">★★ Poor</option><option value="1">★ Very poor</option></select></label>
  <label>Your feedback<textarea id="fm" placeholder="What happened? What did you expect?"></textarea></label>
  <label class="fck"><input type="checkbox" id="fk" checked> Attach my current circuit (design picture + short link)</label>
- <div id="fs" style="font-size:12px;color:var(--mut)">Your device type and screen size are added automatically. The short link is made with is.gd.</div>
+ <div id="fs" style="font-size:12px;color:var(--mut)">Your device type and screen size are added automatically. The circuit is saved on jsonblob.com and shortened with is.gd to make a one-line link.</div>
 </div>
 <div style="margin-top:8px;display:flex;gap:6px"><button id="fsend" class="on">Send</button><button id="fcl">Close</button></div></dialog>
 <dialog id="dl"><h3 id="dh" style="margin:0 0 8px"></h3><textarea id="dt"></textarea><div style="margin-top:8px;display:flex;gap:6px"><button id="dok">OK</button><button id="dcl">Close</button></div></dialog>
@@ -617,26 +617,31 @@ Object.entries(GANG).forEach(([k,n])=>{const sp=n==2?40:n==3?30:24,ys=[...Array(
   sch:c=>{const g=gg(c);return P('M-40 0H-14')+ys.map((y,i)=>P(`M14 ${y}H40M-14 0L${g[i]?'14 '+y:'12 '+(y*.6-6)}`)+dot(14,y)).join('')+dot(-14,0)},
   real:c=>{const g=gg(c);return `<rect x="${-pw/2}" y="${-H/2+4}" width="${pw}" height="${H-8}" rx="6" fill="#f8f7f2" stroke="#9ca3af" stroke-width="2"/>`+ys.map((_,i)=>{const x=-pw/2+4+i*rw,y=-H/2+10,h=H-20;return `<rect x="${x}" y="${y}" width="${rw-2}" height="${h}" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="${x}" y="${g[i]?y:y+h/2}" width="${rw-2}" height="${h/2}" rx="3" fill="#6b7280" opacity=".55"/>`}).join('')}};
  ACTS[k]=c=>gg(c).map((v,i)=>['Gang '+(i+1)+' '+(v?'OFF':'ON'),c=>{gg(c)[i]^=1}]);NOCLICK[k]=1});
-const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='252634454547';
-async function shortLink(u){const T=(url,ms)=>{const c=new AbortController();setTimeout(()=>c.abort(),ms||7000);return fetch(url,{signal:c.signal})};
+const APP_VERSION='v10',FB_URL='',FB_EMAIL='',FB_WA='252634454547',FB_SHARE=false;
+async function shortLink(u,strict){const T=(url,ms)=>{const c=new AbortController();setTimeout(()=>c.abort(),ms||7000);return fetch(url,{signal:c.signal})};
  try{const j=await (await T('https://is.gd/create.php?format=json&url='+encodeURIComponent(u))).json();if(j.shorturl)return j.shorturl}catch(e){}
  try{const t=(await (await T('https://tinyurl.com/api-create.php?url='+encodeURIComponent(u))).text()).trim();if(/^https?:\/\/\S+$/.test(t))return t}catch(e){}
- return u}
+ return strict&&u.length>120?'':u}
+async function circuitShort(){const base=location.protocol.startsWith('http')?location.origin+location.pathname:location.href.split('#')[0];let url='';
+ try{const c=new AbortController();setTimeout(()=>c.abort(),8000);const r=await fetch('https://jsonblob.com/api/jsonBlob',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:circuitText(),signal:c.signal}),id=(r.headers.get('Location')||'').split('/').pop();if(r.ok&&/^[\w-]{8,}$/.test(id))url=base+'#j='+id}catch(e){}
+ if(!url){try{url=await circuitLink()}catch(e){}}
+ return url?await shortLink(url,true):''}
 let FBP=null;
 function fbPrep(){if(!$('#fk').checked||!comps.length){FBP=null;return null}
  const sig=snapS();if(FBP&&FBP.sig==sig)return FBP.p;
- const p=(async()=>{const cv=await diagramImage(1.5),blob=await new Promise(r=>cv.toBlob(r,'image/png')),file=new File([blob],'SaveLab-design.png',{type:'image/png'});let link='';try{link=await shortLink(await circuitLink())}catch(e){}return{file,blob,link}})();
+ const p=(async()=>{const cv=await diagramImage(1.5),blob=await new Promise(r=>cv.toBlob(r,'image/png')),file=new File([blob],'SaveLab-design.png',{type:'image/png'});let link='';try{link=await circuitShort()}catch(e){}const json=new File([circuitText()],'SaveLab-circuit.json',{type:'application/json'});return{file,blob,link,json}})();
  p.catch(()=>{});FBP={sig,p};return p}
 function openFB(){$('#fv').textContent=APP_VERSION;$('#fd').showModal();setTimeout(()=>{try{fbPrep()}catch(e){}},60)}
 document.addEventListener('change',e=>{if(e.target&&e.target.id=='fk'){try{fbPrep()}catch(x){}}});
 async function sendFB(){const m=$('#fm').value.trim(),S=t=>{$('#fs').textContent=t};if(!m){S('Please write your feedback first.');return}
  const o={name:$('#fn').value,contact:$('#fc').value,type:$('#ft').value,part:$('#fa').value,rating:$('#fr').value,message:m,version:APP_VERSION,screen:innerWidth+'x'+innerHeight,device:navigator.userAgent,time:new Date().toISOString()};
- let pic=null;if($('#fk').checked){S('Preparing your design picture…');try{pic=await fbPrep()}catch(e){pic=null}try{o.circuit=(pic&&pic.link)||await circuitLink()}catch(e){}}
+ let pic=null;if($('#fk').checked){S('Preparing your design picture…');try{pic=await fbPrep()}catch(e){pic=null}try{o.circuit=pic?pic.link:await circuitShort()}catch(e){}}
  if(FB_URL){try{if(pic)o.picture=await new Promise(ok=>{const r=new FileReader();r.onload=()=>ok(r.result);r.readAsDataURL(pic.blob)});const r=await fetch(FB_URL,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(o)});if(!r.ok)throw 0;S('✔ Thank you! Your feedback was sent.');$('#fm').value='';setTimeout(()=>$('#fd').close(),1600)}catch(e){S('Could not send (check your internet). Your text is kept – try again.')}return}
  const t='SaveLab feedback '+APP_VERSION+'\nName: '+o.name+'\nContact: '+o.contact+'\nType: '+o.type+'\nPart: '+o.part+'\nRating: '+o.rating+'/5\n\n'+m+'\n\nDevice: '+o.screen+' '+o.device+(o.circuit?'\n\nCircuit: '+o.circuit:'')+(pic?'\n(Design picture attached)':'');
  const t2=t;let pn='';
- if(pic&&navigator.canShare&&navigator.canShare({files:[pic.file]})){try{await navigator.share({files:[pic.file],text:t,title:'SaveLab feedback'});S('✔ Pick WhatsApp (or any app) and send it to the developer – thank you!');return}catch(e){if(e&&e.name=='AbortError'){S('Cancelled.');return}}}
- if(pic){try{await navigator.clipboard.write([new ClipboardItem({'image/png':pic.blob})]);pn='📋 Picture copied – paste it into the chat (Ctrl+V or long-press).'}catch(e){try{saveBlob(pic.blob,'SaveLab-design.png');pn='Picture saved – attach it in the chat (📎).'}catch(x){}}}
+ if(FB_SHARE&&pic&&navigator.canShare&&navigator.canShare({files:[pic.file]})){try{const fl=[pic.file];if(!pic.link&&navigator.canShare({files:[pic.file,pic.json]}))fl.push(pic.json);await navigator.share({files:fl,text:t,title:'SaveLab feedback'});S('✔ Pick WhatsApp (or any app) and send it to the developer – thank you!');return}catch(e){if(e&&e.name=='AbortError'){S('Cancelled.');return}}}
+ if(pic){const phone=matchMedia('(pointer:coarse)').matches;let ok=false;try{await navigator.clipboard.write([new ClipboardItem({'image/png':pic.blob})]);ok=true}catch(e){}
+  if(phone||!ok){try{saveBlob(pic.blob,'SaveLab-design.png');pn=ok?'📋 Picture copied and saved – attach it with 📎 if pasting does not work.':'Picture saved – attach it in the chat with 📎.'}catch(x){}}else pn='📋 Picture copied – paste it into the chat (Ctrl+V).'}
  if(FB_EMAIL){S((pn?pn+' ':'')+'Opening your email app…');location.href='mailto:'+FB_EMAIL+'?subject='+encodeURIComponent('SaveLab feedback '+APP_VERSION)+'&body='+encodeURIComponent(t2);return}
  if(FB_WA){S((pn?pn+' ':'')+'Opening WhatsApp…');const wu='https://wa.me/'+String(FB_WA).replace(/\D/g,'')+'?text='+encodeURIComponent(t2);if(!window.open(wu,'_blank'))location.href=wu;return}
  try{if(navigator.share){await navigator.share({title:'SaveLab feedback',text:t});return}}catch(e){return}
@@ -1248,7 +1253,7 @@ async function loadCode(code){try{let u=unb64u(code.slice(1));if(code[0]=='1')u=
  const cs=o.c.map((a,i)=>({id:'c'+(i+1),type:a[0],x:a[1],y:a[2],rot:(a[3]&&a[3].r)||0,mode:(a[3]&&a[3].m)||null,s:(a[3]&&a[3].s)||{},...(a[3]&&a[3].l?{label:a[3].l}:{})})),
   ws=o.w.map((r,i)=>({id:'w'+(i+1),a:'c'+(r[0]+1)+':'+r[1],b:'c'+(r[2]+1)+':'+r[3],k:r[4],...(r[5]?{sz:r[5]}:{})}));
  return importText(JSON.stringify({app:'SaveLab',version:2,comps:cs,wires:ws,nid:Math.max(cs.length,ws.length)+2}))}catch(e){log('That circuit link could not be opened');return false}}
-function openHashLink(){if(location.hash.startsWith('#c=')){const c=location.hash.slice(3);loadCode(c).then(()=>{try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}})}}
+function openHashLink(){if(/^#j=[\w-]{8,}$/.test(location.hash)){const id=location.hash.slice(3);fetch('https://jsonblob.com/api/jsonBlob/'+id,{headers:{Accept:'application/json'}}).then(r=>r.ok?r.text():Promise.reject()).then(t=>{importText(t);try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}).catch(()=>log('That circuit link could not be opened'));return}if(location.hash.startsWith('#c=')){const c=location.hash.slice(3);loadCode(c).then(()=>{try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}})}}
 const _exportUI2=exportUI;exportUI=function(){_exportUI2();const m=document.querySelector('#mdb .mbtns');if(m)m.insertAdjacentHTML('afterbegin','<button class="big" data-ex="link">🔗 Copy short link</button>')};
 const _exAct2=exAct;exAct=async function(a){if(a=='link'){try{const l=await circuitLink();try{await navigator.clipboard.writeText(l);say('✔ Link copied ('+l.length+' characters) – paste it in a message')}catch(e){say(l)}}catch(e){say('Could not make the link.',1)}return}return _exAct2(a)};
 addEventListener('hashchange',openHashLink);openHashLink();
